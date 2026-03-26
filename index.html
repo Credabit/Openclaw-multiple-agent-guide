@@ -607,6 +607,7 @@
 
     <div class="nav-section-label">Getting Started</div>
     <a href="#install" class="nav-link"><span class="nav-icon">📦</span> Installation</a>
+    <a href="#amd-gpu" class="nav-link"><span class="nav-icon">🔴</span> AMD GPU + Ollama</a>
     <a href="#onboarding" class="nav-link"><span class="nav-icon">🚀</span> Onboarding</a>
     <a href="#quick-start" class="nav-link"><span class="nav-icon">⚡</span> Quick Start</a>
 
@@ -614,7 +615,7 @@
     <a href="#gateway" class="nav-link"><span class="nav-icon">🌐</span> Gateway Architecture</a>
     <a href="#channels" class="nav-link"><span class="nav-icon">💬</span> Channels</a>
     <a href="#memory" class="nav-link"><span class="nav-icon">🧠</span> Memory & Sessions</a>
-    <a href="#multi-agent" class="nav-link"><span class="nav-icon">🤖</span> Multi-Agent</a>
+    <a href="#multi-agent" class="nav-link"><span class="nav-icon">🤖</span> Multi-Agent Setup</a>
 
     <div class="nav-section-label">Tools & Skills</div>
     <a href="#tools" class="nav-link"><span class="nav-icon">🔧</span> Built-in Tools</a>
@@ -633,6 +634,7 @@
     <a href="#config" class="nav-link"><span class="nav-icon">⚙️</span> Configuration</a>
     <a href="#security" class="nav-link"><span class="nav-icon">🔒</span> Security</a>
     <a href="#help" class="nav-link"><span class="nav-icon">🆘</span> Help & Troubleshoot</a>
+    <a href="#lessons" class="nav-link"><span class="nav-icon">📝</span> Lessons Learned</a>
     <a href="#community" class="nav-link"><span class="nav-icon">🌐</span> Community</a>
   </div>
   <div class="sidebar-footer">
@@ -648,10 +650,10 @@
 
   <!-- HERO -->
   <div class="hero" id="top">
-    <div class="hero-badge">🦞 The Holy Grail Guide</div>
+    <div class="hero-badge">🦞 The Holy Grail Guide — Battle-Tested Edition</div>
     <h1>OpenClaw<br><span>Complete Reference</span></h1>
     <p class="hero-desc">
-      Everything you need to deploy, configure, and master OpenClaw — the self-hosted AI gateway that lets you chat with an AI agent from any messaging app you already use.
+      Everything you need to deploy, configure, and master OpenClaw — including AMD GPU setup, multi-agent teams with local models, and hard-won lessons from real-world configuration.
     </p>
     <div class="hero-links">
       <a href="https://openclaw.ai" target="_blank" class="btn btn-primary">🦞 openclaw.ai ↗</a>
@@ -753,6 +755,7 @@
         <tr><td>File I/O</td><td>Read, write, edit, apply_patch</td><td><span class="tag tag-green">Built-in</span></td></tr>
         <tr><td>Cron / scheduling</td><td>5-field cron expressions, one-shot, recurring</td><td><span class="tag tag-green">Built-in</span></td></tr>
         <tr><td>Skills system</td><td>AgentSkills-compatible SKILL.md files</td><td><span class="tag tag-green">Built-in</span></td></tr>
+        <tr><td>Multi-agent</td><td>Sub-agent spawning with delegation</td><td><span class="tag tag-green">Built-in</span></td></tr>
         <tr><td>Plugins</td><td>npm-published extension packages</td><td><span class="tag tag-blue">Extensible</span></td></tr>
         <tr><td>Voice calls</td><td>Plivo or Twilio</td><td><span class="tag tag-orange">Plugin</span></td></tr>
         <tr><td>Windows companion app</td><td>Native app</td><td><span class="tag tag-yellow">Planned</span></td></tr>
@@ -771,6 +774,14 @@
     </div>
 
     <p><strong>System Requirements:</strong> Node 24 (recommended) or Node 22.16+. macOS, Linux, or Windows (native or WSL2). WSL2 is more stable than native Windows and recommended for the full experience.</p>
+
+    <div class="alert alert-warn">
+      <span class="alert-icon">⚠️</span>
+      <div class="alert-text">
+        <strong>Ubuntu Version Matters!</strong>
+        Use <strong>Ubuntu 24.04 LTS</strong> for AMD GPU setups. Ubuntu 25.x has kernel 6.14 which breaks ROCm DKMS builds. This was discovered the hard way — a fresh 24.04 install fixed everything.
+      </div>
+    </div>
 
     <div class="alert alert-tip">
       <span class="alert-icon">✅</span>
@@ -792,25 +803,26 @@
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-content">
+          <h4>Fix PATH if needed</h4>
+          <p style="font-size:13px;">If <code>openclaw: command not found</code>, add npm's global bin to your PATH:</p>
+          <pre><code>echo 'export PATH="$(npm prefix -g)/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc</code></pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
           <h4>Run onboarding</h4>
           <pre><code>openclaw onboard --install-daemon</code></pre>
           <p style="font-size:13px;">The wizard walks you through choosing a model provider, setting an API key, and configuring the Gateway. Takes about 2 minutes.</p>
         </div>
       </div>
       <div class="step">
-        <div class="step-num">3</div>
+        <div class="step-num">4</div>
         <div class="step-content">
           <h4>Verify the Gateway is running</h4>
           <pre><code>openclaw gateway status</code></pre>
           <p style="font-size:13px;">You should see the Gateway listening on port <code>18789</code>.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <div class="step-content">
-          <h4>Open the dashboard</h4>
-          <pre><code>openclaw dashboard</code></pre>
-          <p style="font-size:13px;">This opens the Control UI in your browser. Type a message and you should get an AI reply!</p>
         </div>
       </div>
     </div>
@@ -830,9 +842,6 @@ cd openclaw
 pnpm install && pnpm ui:build && pnpm build
 pnpm link --global
 openclaw onboard --install-daemon</code></pre>
-
-    <h4>Install from GitHub main</h4>
-    <pre><code>npm install -g github:openclaw/openclaw#main</code></pre>
 
     <h3>Containers & Package Managers</h3>
     <div class="card-grid">
@@ -862,14 +871,94 @@ openclaw onboard --install-daemon</code></pre>
     <pre><code>openclaw --version      # confirm the CLI is available
 openclaw doctor         # check for config issues
 openclaw gateway status # verify the Gateway is running</code></pre>
+  </section>
+
+  <!-- AMD GPU + OLLAMA -->
+  <section class="section" id="amd-gpu">
+    <div class="section-header">
+      <div class="section-icon">🔴</div>
+      <div>
+        <div class="section-num">03b — GPU Setup</div>
+        <h2>AMD GPU + Ollama Setup</h2>
+      </div>
+    </div>
+
+    <p>Run local models on AMD GPUs using ROCm and Ollama. This enables cost-free inference for sub-agents while keeping your main agent on a cloud provider.</p>
 
     <div class="alert alert-warn">
       <span class="alert-icon">⚠️</span>
       <div class="alert-text">
-        <strong>openclaw not found?</strong>
-        Check that <code>$(npm prefix -g)/bin</code> is in your <code>$PATH</code>. Add <code>export PATH="$(npm prefix -g)/bin:$PATH"</code> to your <code>~/.zshrc</code> or <code>~/.bashrc</code> and open a new terminal.
+        <strong>Critical: Ubuntu 24.04 LTS Required</strong>
+        Ubuntu 25.x ships with kernel 6.14 which breaks ROCm DKMS. Use Ubuntu 24.04.4 LTS for stable AMD GPU support.
       </div>
     </div>
+
+    <h3>Step 1: Install ROCm 7.2</h3>
+    <pre><code># Update system
+sudo apt update && sudo apt upgrade -y
+
+# Download ROCm installer
+wget https://repo.radeon.com/amdgpu-install/7.2/ubuntu/noble/amdgpu-install_7.2.70200-1_all.deb
+
+# Install the package
+sudo apt install ./amdgpu-install_7.2.70200-1_all.deb
+
+# Install ROCm and graphics drivers (takes 10-20 minutes)
+sudo amdgpu-install -y --usecase=graphics,rocm
+
+# Add user to required groups
+sudo usermod -a -G render,video $LOGNAME
+
+# REBOOT REQUIRED
+sudo reboot</code></pre>
+
+    <h3>Step 2: Verify ROCm</h3>
+    <pre><code># Check GPU is detected
+rocminfo | grep -A 5 "Agent 2"
+
+# Check GPU stats
+rocm-smi</code></pre>
+
+    <p>You should see your GPU listed (e.g., "AMD Radeon RX 9070 XT") and stats like temperature, power, and VRAM.</p>
+
+    <h3>Step 3: Install Ollama</h3>
+    <pre><code># Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh</code></pre>
+
+    <p>Look for <strong>"AMD GPU ready"</strong> at the end of installation.</p>
+
+    <h3>Step 4: Pull Models</h3>
+    <pre><code># Research agent model (~9GB)
+ollama pull qwen2.5:14b
+
+# Writer/optimizer model (~4.9GB)
+ollama pull llama3.1:8b
+
+# Creative model (~4.4GB)
+ollama pull mistral:7b
+
+# Verify
+ollama list</code></pre>
+
+    <h3>Step 5: Verify GPU Acceleration</h3>
+    <pre><code># In one terminal, run a test query
+ollama run qwen2.5:14b "Explain quantum computing in 50 words"
+
+# In another terminal, check GPU usage
+rocm-smi</code></pre>
+
+    <p>GPU% should increase and power draw should rise significantly above idle.</p>
+
+    <h3>Troubleshooting AMD GPU</h3>
+    <table>
+      <thead><tr><th>Problem</th><th>Solution</th></tr></thead>
+      <tbody>
+        <tr><td>ROCm DKMS build fails</td><td>Use Ubuntu 24.04 LTS, not 25.x</td></tr>
+        <tr><td>GPU not detected</td><td>Run <code>rocminfo</code> and check Agent 2</td></tr>
+        <tr><td>Ollama not using GPU</td><td>Check <code>rocm-smi</code> during inference</td></tr>
+        <tr><td>"AMD GPU ready" not shown</td><td>Reinstall Ollama after ROCm is working</td></tr>
+      </tbody>
+    </table>
   </section>
 
   <!-- ONBOARDING -->
@@ -885,13 +974,42 @@ openclaw gateway status # verify the Gateway is running</code></pre>
     <p>OpenClaw has two onboarding paths: the <strong>CLI wizard</strong> and the <strong>macOS companion app</strong>. Both accomplish the same setup; choose based on your preference.</p>
 
     <h3>CLI Onboarding</h3>
-    <p>The <code>openclaw onboard</code> command is the interactive wizard. Run it with <code>--install-daemon</code> to also set up the Gateway as a background service. See the <a href="https://docs.openclaw.ai/start/wizard" target="_blank">full CLI onboarding reference →</a></p>
+    <p>The <code>openclaw onboard</code> command is the interactive wizard. Run it with <code>--install-daemon</code> to also set up the Gateway as a background service.</p>
+
+    <h4>Onboarding Prompts Explained</h4>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Model Provider</h4>
+          <p style="font-size:13px;">Choose your primary provider. Options include Anthropic, OpenAI, Google, Ollama, and 30+ others. For OpenAI with ChatGPT Plus, select <strong>OAuth</strong> authentication.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Authentication</h4>
+          <p style="font-size:13px;">Either enter an API key directly or use OAuth for subscription-based access (ChatGPT Plus, Claude Pro).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Enable Hooks</h4>
+          <p style="font-size:13px;">Recommended: <code>boot-md</code> and <code>session-memory</code> for persistent memory across sessions.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>Hatch Location</h4>
+          <p style="font-size:13px;">Choose <strong>Hatch in TUI (recommended)</strong> for the terminal interface.</p>
+        </div>
+      </div>
+    </div>
 
     <h3>macOS App Onboarding</h3>
-    <p>Download the companion app from <a href="https://github.com/openclaw/openclaw/releases/latest" target="_blank">GitHub Releases</a>. Requires macOS 15+, Universal Binary. The app gives you a menu bar interface and guided setup. See <a href="https://docs.openclaw.ai/start/onboarding" target="_blank">macOS onboarding guide →</a></p>
-
-    <h3>Personal Assistant Setup</h3>
-    <p>After onboarding, follow the <a href="https://docs.openclaw.ai/start/openclaw" target="_blank">Personal Assistant Setup guide</a> to configure your name, persona, preferred channels, and initial memory. This is what makes OpenClaw uniquely <em>yours</em>.</p>
+    <p>Download the companion app from <a href="https://github.com/openclaw/openclaw/releases/latest" target="_blank">GitHub Releases</a>. Requires macOS 15+, Universal Binary. The app gives you a menu bar interface and guided setup.</p>
   </section>
 
   <!-- QUICK START -->
@@ -909,17 +1027,17 @@ openclaw gateway status # verify the Gateway is running</code></pre>
     <pre><code># 1. Install
 curl -fsSL https://openclaw.ai/install.sh | bash
 
-# 2. Run the guided onboarding wizard
+# 2. Fix PATH if needed
+echo 'export PATH="$(npm prefix -g)/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
+
+# 3. Run the guided onboarding wizard
 openclaw onboard --install-daemon
 
-# 3. Verify the Gateway
+# 4. Verify the Gateway
 openclaw gateway status
 
-# 4. Open the browser dashboard
-openclaw dashboard
-
-# 5. Connect a channel (Telegram is fastest — just a bot token)
-# See: https://docs.openclaw.ai/channels/telegram</code></pre>
+# 5. Open the TUI
+openclaw tui</code></pre>
 
     <div class="alert alert-tip">
       <span class="alert-icon">💡</span>
@@ -930,7 +1048,6 @@ openclaw dashboard
     </div>
 
     <h3>Environment Variables</h3>
-    <p>Advanced path and config overrides:</p>
     <table>
       <thead>
         <tr><th>Variable</th><th>Purpose</th></tr>
@@ -943,7 +1060,6 @@ openclaw dashboard
         <tr><td><code>OPENCLAW_GATEWAY_PORT</code></td><td>Override the Gateway port (default: 18789)</td></tr>
       </tbody>
     </table>
-    <p>Full reference: <a href="https://docs.openclaw.ai/help/environment" target="_blank">Environment Variables →</a></p>
   </section>
 
   <hr class="divider">
@@ -984,47 +1100,13 @@ openclaw dashboard
       </div>
     </div>
 
-    <h3>Runtime Model</h3>
-    <p>One always-on process for routing, control plane, and channel connections. Single multiplexed port for: WebSocket control/RPC, HTTP APIs (OpenAI-compatible, Responses, tools invoke), Control UI and hooks. Default bind mode: loopback. Auth is required by default.</p>
-
-    <h3>Port & Bind Settings</h3>
-    <table>
-      <thead>
-        <tr><th>Setting</th><th>Resolution Order</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Gateway port</td><td><code>--port</code> → <code>OPENCLAW_GATEWAY_PORT</code> → <code>gateway.port</code> → <code>18789</code></td></tr>
-        <tr><td>Bind mode</td><td>CLI/override → <code>gateway.bind</code> → <code>loopback</code></td></tr>
-      </tbody>
-    </table>
-
-    <h3>Hot Reload Modes</h3>
-    <table>
-      <thead>
-        <tr><th>Mode</th><th>Behavior</th></tr>
-      </thead>
-      <tbody>
-        <tr><td><code>off</code></td><td>No config reload</td></tr>
-        <tr><td><code>hot</code></td><td>Apply only hot-safe changes</td></tr>
-        <tr><td><code>restart</code></td><td>Restart on reload-required changes</td></tr>
-        <tr><td><code>hybrid</code> (default)</td><td>Hot-apply when safe, restart when required</td></tr>
-      </tbody>
-    </table>
-
     <h3>Operator Commands</h3>
     <pre><code>openclaw gateway status       # check status
 openclaw gateway status --deep # deep diagnostics
-openclaw gateway status --json # JSON output
-openclaw gateway install       # install as service
 openclaw gateway restart       # restart the gateway
 openclaw gateway stop          # stop the gateway
-openclaw secrets reload        # reload secrets
 openclaw logs --follow         # tail logs
 openclaw doctor                # audit and repair</code></pre>
-
-    <h3>Remote Access</h3>
-    <p><strong>Preferred:</strong> <a href="https://docs.openclaw.ai/gateway/tailscale" target="_blank">Tailscale</a> or VPN. <strong>Fallback:</strong> SSH tunnel:</p>
-    <pre><code>ssh -N -L 18789:127.0.0.1:18789 user@host</code></pre>
 
     <h3>Common Failure Signatures</h3>
     <table>
@@ -1038,8 +1120,6 @@ openclaw doctor                # audit and repair</code></pre>
         <tr><td><code>unauthorized</code> during connect</td><td>Auth mismatch between client and gateway</td></tr>
       </tbody>
     </table>
-
-    <p>Full docs: <a href="https://docs.openclaw.ai/gateway" target="_blank">Gateway Runbook →</a> | <a href="https://docs.openclaw.ai/concepts/architecture" target="_blank">Gateway Architecture →</a></p>
   </section>
 
   <!-- CHANNELS -->
@@ -1052,7 +1132,7 @@ openclaw doctor                # audit and repair</code></pre>
       </div>
     </div>
 
-    <p>OpenClaw can talk to you on any chat app you already use. Each channel connects via the Gateway. Text is supported everywhere; media and reactions vary by channel. Channels can run simultaneously — configure multiple and OpenClaw will route per chat.</p>
+    <p>OpenClaw can talk to you on any chat app you already use. Channels can run simultaneously — configure multiple and OpenClaw will route per chat.</p>
 
     <div class="alert alert-tip">
       <span class="alert-icon">⚡</span>
@@ -1068,7 +1148,7 @@ openclaw doctor                # audit and repair</code></pre>
       <a href="https://docs.openclaw.ai/channels/discord" target="_blank" class="channel-item"><span class="ch-emoji">🎮</span> Discord</a>
       <a href="https://docs.openclaw.ai/channels/slack" target="_blank" class="channel-item"><span class="ch-emoji">#</span> Slack</a>
       <a href="https://docs.openclaw.ai/channels/signal" target="_blank" class="channel-item"><span class="ch-emoji">🔒</span> Signal</a>
-      <a href="https://docs.openclaw.ai/channels/bluebubbles" target="_blank" class="channel-item"><span class="ch-emoji">🍎</span> iMessage (BlueBubbles)</a>
+      <a href="https://docs.openclaw.ai/channels/bluebubbles" target="_blank" class="channel-item"><span class="ch-emoji">🍎</span> iMessage</a>
       <a href="https://docs.openclaw.ai/channels/googlechat" target="_blank" class="channel-item"><span class="ch-emoji">🔵</span> Google Chat</a>
       <a href="https://docs.openclaw.ai/channels/irc" target="_blank" class="channel-item"><span class="ch-emoji">📡</span> IRC</a>
     </div>
@@ -1077,31 +1157,11 @@ openclaw doctor                # audit and repair</code></pre>
     <div class="channel-grid">
       <a href="https://docs.openclaw.ai/channels/mattermost" target="_blank" class="channel-item"><span class="ch-emoji">🔷</span> Mattermost</a>
       <a href="https://docs.openclaw.ai/channels/matrix" target="_blank" class="channel-item"><span class="ch-emoji">📐</span> Matrix</a>
-      <a href="https://docs.openclaw.ai/channels/msteams" target="_blank" class="channel-item"><span class="ch-emoji">💼</span> Microsoft Teams</a>
+      <a href="https://docs.openclaw.ai/channels/msteams" target="_blank" class="channel-item"><span class="ch-emoji">💼</span> MS Teams</a>
       <a href="https://docs.openclaw.ai/channels/nostr" target="_blank" class="channel-item"><span class="ch-emoji">⚡</span> Nostr</a>
-      <a href="https://docs.openclaw.ai/channels/line" target="_blank" class="channel-item"><span class="ch-emoji">💬</span> LINE</a>
-      <a href="https://docs.openclaw.ai/channels/feishu" target="_blank" class="channel-item"><span class="ch-emoji">🪶</span> Feishu</a>
-      <a href="https://docs.openclaw.ai/channels/twitch" target="_blank" class="channel-item"><span class="ch-emoji">🟣</span> Twitch</a>
       <a href="https://docs.openclaw.ai/plugins/voice-call" target="_blank" class="channel-item"><span class="ch-emoji">📞</span> Voice Call</a>
-      <a href="https://docs.openclaw.ai/channels/nextcloud-talk" target="_blank" class="channel-item"><span class="ch-emoji">☁️</span> Nextcloud Talk</a>
-      <a href="https://docs.openclaw.ai/channels/zalo" target="_blank" class="channel-item"><span class="ch-emoji">🇻🇳</span> Zalo</a>
-      <a href="https://docs.openclaw.ai/channels/synology-chat" target="_blank" class="channel-item"><span class="ch-emoji">💾</span> Synology Chat</a>
-      <a href="https://docs.openclaw.ai/channels/tlon" target="_blank" class="channel-item"><span class="ch-emoji">🌐</span> Tlon (Urbit)</a>
+      <a href="https://docs.openclaw.ai/channels/twitch" target="_blank" class="channel-item"><span class="ch-emoji">🟣</span> Twitch</a>
     </div>
-
-    <h3>Channel Configuration</h3>
-    <p>Example: allow only specific WhatsApp numbers, require @mention in groups:</p>
-    <pre><code>{
-  channels: {
-    whatsapp: {
-      allowFrom: ["+15555550123"],
-      groups: { "*": { requireMention: true } },
-    },
-  },
-  messages: { groupChat: { mentionPatterns: ["@openclaw"] } },
-}</code></pre>
-
-    <p>See also: <a href="https://docs.openclaw.ai/channels/pairing" target="_blank">Pairing →</a> | <a href="https://docs.openclaw.ai/channels/groups" target="_blank">Groups →</a> | <a href="https://docs.openclaw.ai/channels/channel-routing" target="_blank">Channel Routing →</a> | <a href="https://docs.openclaw.ai/channels/troubleshooting" target="_blank">Channel Troubleshooting →</a></p>
   </section>
 
   <!-- MEMORY & SESSIONS -->
@@ -1126,12 +1186,11 @@ openclaw doctor                # audit and repair</code></pre>
       <div class="card">
         <div class="card-icon">🧠</div>
         <div class="card-title">Long-term Memory</div>
-        <div class="card-desc"><code>MEMORY.md</code> — Curated long-term memory at the workspace root. Decisions, preferences, durable facts.</div>
+        <div class="card-desc"><code>MEMORY.md</code> — Curated long-term memory at the workspace root.</div>
       </div>
     </div>
 
     <h3>Memory Tools</h3>
-    <p>Two agent-facing tools are available:</p>
     <table>
       <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
       <tbody>
@@ -1140,55 +1199,167 @@ openclaw doctor                # audit and repair</code></pre>
       </tbody>
     </table>
 
-    <h3>When to Write Memory</h3>
-    <p>Decisions, preferences, and durable facts → <code>MEMORY.md</code>. Day-to-day notes → <code>memory/YYYY-MM-DD.md</code>. If someone says "remember this," write it down immediately. <strong>If you want something to stick, ask the bot to write it into memory.</strong></p>
-
-    <h3>Vector Memory Search</h3>
-    <p>OpenClaw can build a small vector index over memory files for semantic queries. Supports hybrid search (BM25 + vector). Multiple embedding providers: OpenAI, Gemini, Voyage, Mistral, Ollama, and local GGUF models. See <a href="https://docs.openclaw.ai/reference/memory-config" target="_blank">Memory Config Reference →</a></p>
-
-    <h3>Session Management</h3>
-    <p>Sessions track the conversation history for each agent. Direct chats collapse into a shared <code>main</code> session. Groups get isolated sessions. See: <a href="https://docs.openclaw.ai/concepts/session" target="_blank">Session Management →</a> | <a href="https://docs.openclaw.ai/concepts/compaction" target="_blank">Compaction →</a></p>
-
-    <h3>Automatic Memory Flush</h3>
-    <p>When a session nears auto-compaction, OpenClaw triggers a silent turn to write durable memory before context is compacted. Configurable via <code>agents.defaults.compaction.memoryFlush</code>.</p>
+    <h3>Clearing Sessions</h3>
+    <p>After major config changes, clear stale sessions:</p>
+    <pre><code>rm -rf ~/.openclaw/agents/main/sessions/*
+openclaw gateway restart</code></pre>
   </section>
 
-  <!-- MULTI-AGENT -->
+  <!-- MULTI-AGENT SETUP -->
   <section class="section" id="multi-agent">
     <div class="section-header">
       <div class="section-icon">🤖</div>
       <div>
         <div class="section-num">09 — Multi-Agent</div>
-        <h2>Multi-Agent Routing</h2>
+        <h2>Multi-Agent Setup</h2>
       </div>
     </div>
 
-    <p>OpenClaw supports running multiple agents simultaneously — isolated sessions per agent, workspace, or sender. This enables complex workflows where agents can delegate to sub-agents or coordinate across different channels.</p>
+    <p>OpenClaw supports running multiple agents with a main orchestrator delegating to specialized sub-agents. This is powerful for complex workflows like content creation.</p>
 
-    <div class="card-grid">
-      <div class="card">
-        <div class="card-icon">🔀</div>
-        <div class="card-title">Multi-Agent Routing</div>
-        <div class="card-desc">Isolated sessions per workspace or sender. Agents can be pinned to specific jobs.</div>
-      </div>
-      <div class="card">
-        <div class="card-icon">👥</div>
-        <div class="card-title">Sub-Agents</div>
-        <div class="card-desc">Spawn sub-agents for parallel tasks. Results delivered back to the requester.</div>
-      </div>
-      <div class="card">
-        <div class="card-icon">🏗️</div>
-        <div class="card-title">Delegate Architecture</div>
-        <div class="card-desc">Delegate patterns for splitting work across agents with different capabilities.</div>
-      </div>
-      <div class="card">
-        <div class="card-icon">📡</div>
-        <div class="card-title">ACP Agents</div>
-        <div class="card-desc">Agent Communication Protocol for structured inter-agent messaging.</div>
+    <div class="alert alert-info">
+      <span class="alert-icon">💡</span>
+      <div class="alert-text">
+        <strong>Example Team Architecture</strong>
+        Main agent (cloud model) coordinates local sub-agents: Scout (research), Scribe (writing), Pixel (creative), Pulse (SEO).
       </div>
     </div>
 
-    <p>Full docs: <a href="https://docs.openclaw.ai/concepts/multi-agent" target="_blank">Multi-Agent Routing →</a> | <a href="https://docs.openclaw.ai/tools/subagents" target="_blank">Sub-Agents →</a> | <a href="https://docs.openclaw.ai/concepts/delegate-architecture" target="_blank">Delegate Architecture →</a></p>
+    <h3>Step 1: Add Sub-Agents via CLI</h3>
+    <p><strong>Important:</strong> Agents must be added via CLI, not by editing config directly.</p>
+    <pre><code># Add each sub-agent
+openclaw agents add scout
+openclaw agents add scribe
+openclaw agents add pixel
+openclaw agents add pulse
+
+# Verify
+openclaw agents list</code></pre>
+
+    <p>When prompted for each agent:</p>
+    <ul style="margin: 12px 0 12px 24px; color: #b8b0a6; font-size: 14px;">
+      <li><strong>Workspace:</strong> Use a shared path like <code>~/.openclaw/workspace/shared</code></li>
+      <li><strong>Copy auth from main:</strong> No</li>
+      <li><strong>Configure model/auth:</strong> Yes → Ollama → Local mode</li>
+    </ul>
+
+    <h3>Step 2: Create models.json for Each Sub-Agent</h3>
+    <p>Each sub-agent needs a <code>models.json</code> file in its agent directory:</p>
+    <pre><code># Example: ~/.openclaw/agents/scout/agent/models.json
+{
+  "providers": {
+    "ollama": {
+      "baseUrl": "http://127.0.0.1:11434",
+      "api": "ollama",
+      "models": [
+        {
+          "id": "qwen2.5:14b",
+          "name": "qwen2.5:14b",
+          "reasoning": false,
+          "input": ["text"],
+          "cost": {"input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0},
+          "contextWindow": 32768,
+          "maxTokens": 8192
+        }
+      ]
+    }
+  },
+  "default": "ollama/qwen2.5:14b"
+}</code></pre>
+
+    <h3>Step 3: Enable Sub-Agent Permissions (CRITICAL)</h3>
+    <p>The main agent needs explicit permission to spawn sub-agents:</p>
+    <pre><code>openclaw config set agents.list.0.subagents.allowAgents '["scout","scribe","pixel","pulse"]' --strict-json
+openclaw gateway restart</code></pre>
+
+    <div class="alert alert-warn">
+      <span class="alert-icon">⚠️</span>
+      <div class="alert-text">
+        <strong>This step is required!</strong>
+        Without <code>allowAgents</code>, the main agent's <code>agents_list</code> tool will only show itself as spawnable.
+      </div>
+    </div>
+
+    <h3>Step 4: Create System Prompts</h3>
+    <p>Each sub-agent needs a <code>SYSTEM.md</code> file defining its role:</p>
+    <pre><code># Example: ~/.openclaw/agents/scout/agent/SYSTEM.md
+
+# Scout - Trend Researcher
+
+You are Scout, the Trend Researcher.
+
+## Your Job
+- Research trending topics
+- Analyze competitor content
+- Find content gaps and opportunities
+- Compile research briefs
+
+## Output Format
+Write findings to project's RESEARCH.md file.
+
+## Rules
+- Stay factual and data-driven
+- Only respond when Boss delegates to you</code></pre>
+
+    <h3>Step 5: Configure Team Info in USER.md</h3>
+    <p>The main agent needs to know about its team. Add to shared workspace <code>USER.md</code>:</p>
+    <pre><code># USER.md - Team Configuration
+
+## The Team
+
+You (Boss/main agent) lead a team of 4 AI sub-agents:
+
+| Agent | ID | Role | Model |
+|-------|-----|------|-------|
+| Scout | scout | Researcher | ollama/qwen2.5:14b |
+| Scribe | scribe | Writer | ollama/llama3.1:8b |
+| Pixel | pixel | Creative | ollama/mistral:7b |
+| Pulse | pulse | SEO | ollama/llama3.1:8b |
+
+## How to Delegate
+
+Use `sessions_spawn` tool to assign tasks:
+- Scout: topic research, trend analysis
+- Scribe: scripts, outlines, drafts
+- Pixel: thumbnail concepts, titles
+- Pulse: SEO, descriptions, tags</code></pre>
+
+    <h3>Step 6: Test the Team</h3>
+    <pre><code># Clear sessions and restart
+rm -rf ~/.openclaw/agents/main/sessions/*
+openclaw gateway restart
+
+# Open TUI
+openclaw tui</code></pre>
+
+    <p>Test with: <code>Use agents_list to show which sub-agents you can spawn</code></p>
+    <p>Should show: main, scout, scribe, pixel, pulse</p>
+
+    <h3>Multi-Agent File Structure</h3>
+    <pre><code>~/.openclaw/
+├── openclaw.json              # Main config
+├── agents/
+│   ├── main/agent/
+│   │   ├── SYSTEM.md          # Boss persona
+│   │   ├── models.json        # Cloud model config
+│   │   └── auth-profiles.json # OAuth tokens
+│   ├── scout/agent/
+│   │   ├── SYSTEM.md          # Scout persona
+│   │   └── models.json        # Ollama qwen2.5:14b
+│   ├── scribe/agent/
+│   │   ├── SYSTEM.md
+│   │   └── models.json        # Ollama llama3.1:8b
+│   ├── pixel/agent/
+│   │   ├── SYSTEM.md
+│   │   └── models.json        # Ollama mistral:7b
+│   └── pulse/agent/
+│       ├── SYSTEM.md
+│       └── models.json        # Ollama llama3.1:8b
+└── workspace/shared/
+    ├── USER.md                # Team info for Boss
+    ├── MEMORY.md              # Shared memory
+    ├── PIPELINE.md            # Project pipeline
+    └── projects/              # Project folders</code></pre>
   </section>
 
   <hr class="divider">
@@ -1203,36 +1374,25 @@ openclaw doctor                # audit and repair</code></pre>
       </div>
     </div>
 
-    <p>Everything the agent does beyond generating text happens through <strong>tools</strong>. These ship with OpenClaw and are available without installing any plugins:</p>
+    <p>Everything the agent does beyond generating text happens through <strong>tools</strong>:</p>
 
     <table>
       <thead>
-        <tr><th>Tool</th><th>What it does</th><th>Docs</th></tr>
+        <tr><th>Tool</th><th>What it does</th></tr>
       </thead>
       <tbody>
-        <tr><td><code>exec</code> / <code>process</code></td><td>Run shell commands, manage background processes</td><td><a href="https://docs.openclaw.ai/tools/exec" target="_blank">Exec →</a></td></tr>
-        <tr><td><code>browser</code></td><td>Control a Chromium browser (navigate, click, screenshot)</td><td><a href="https://docs.openclaw.ai/tools/browser" target="_blank">Browser →</a></td></tr>
-        <tr><td><code>web_search</code> / <code>web_fetch</code></td><td>Search the web, fetch page content</td><td><a href="https://docs.openclaw.ai/tools/web" target="_blank">Web →</a></td></tr>
-        <tr><td><code>read</code> / <code>write</code> / <code>edit</code></td><td>File I/O in the workspace</td><td>—</td></tr>
-        <tr><td><code>apply_patch</code></td><td>Multi-hunk file patches</td><td><a href="https://docs.openclaw.ai/tools/apply-patch" target="_blank">Apply Patch →</a></td></tr>
-        <tr><td><code>message</code></td><td>Send messages across all channels</td><td><a href="https://docs.openclaw.ai/tools/agent-send" target="_blank">Agent Send →</a></td></tr>
-        <tr><td><code>canvas</code></td><td>Drive node Canvas (present, eval, snapshot)</td><td>—</td></tr>
-        <tr><td><code>image</code> / <code>image_generate</code></td><td>Analyze or generate images</td><td>—</td></tr>
-        <tr><td><code>cron</code> / <code>gateway</code></td><td>Manage scheduled jobs, restart gateway</td><td><a href="https://docs.openclaw.ai/automation/cron-jobs" target="_blank">Cron →</a></td></tr>
-        <tr><td><code>sessions_*</code> / <code>agents_list</code></td><td>Session management, sub-agents</td><td><a href="https://docs.openclaw.ai/tools/subagents" target="_blank">Sub-agents →</a></td></tr>
+        <tr><td><code>exec</code> / <code>process</code></td><td>Run shell commands, manage background processes</td></tr>
+        <tr><td><code>browser</code></td><td>Control Chromium (navigate, click, screenshot)</td></tr>
+        <tr><td><code>web_search</code> / <code>web_fetch</code></td><td>Search the web, fetch page content</td></tr>
+        <tr><td><code>read</code> / <code>write</code> / <code>edit</code></td><td>File I/O in the workspace</td></tr>
+        <tr><td><code>sessions_spawn</code></td><td>Spawn sub-agent tasks</td></tr>
+        <tr><td><code>agents_list</code></td><td>List available agents to spawn</td></tr>
+        <tr><td><code>memory_search</code></td><td>Semantic search over memory</td></tr>
+        <tr><td><code>cron</code></td><td>Manage scheduled jobs</td></tr>
       </tbody>
     </table>
 
-    <h3>Tool Configuration</h3>
-    <h4>Allow & Deny Lists</h4>
-    <pre><code>{
-  tools: {
-    allow: ["group:fs", "browser", "web_search"],
-    deny: ["exec"],
-  },
-}</code></pre>
-
-    <h4>Tool Profiles</h4>
+    <h3>Tool Profiles</h3>
     <table>
       <thead><tr><th>Profile</th><th>What it includes</th></tr></thead>
       <tbody>
@@ -1242,22 +1402,6 @@ openclaw doctor                # audit and repair</code></pre>
         <tr><td><code>minimal</code></td><td><code>session_status</code> only</td></tr>
       </tbody>
     </table>
-
-    <h4>Tool Groups</h4>
-    <table>
-      <thead><tr><th>Group</th><th>Tools</th></tr></thead>
-      <tbody>
-        <tr><td><code>group:runtime</code></td><td>exec, bash, process</td></tr>
-        <tr><td><code>group:fs</code></td><td>read, write, edit, apply_patch</td></tr>
-        <tr><td><code>group:sessions</code></td><td>sessions_list, sessions_history, sessions_send, sessions_spawn, sessions_yield, subagents, session_status</td></tr>
-        <tr><td><code>group:web</code></td><td>web_search, web_fetch</td></tr>
-        <tr><td><code>group:ui</code></td><td>browser, canvas</td></tr>
-        <tr><td><code>group:automation</code></td><td>cron, gateway</td></tr>
-        <tr><td><code>group:messaging</code></td><td>message</td></tr>
-      </tbody>
-    </table>
-
-    <p>Full docs: <a href="https://docs.openclaw.ai/tools" target="_blank">Tools and Plugins →</a></p>
   </section>
 
   <!-- SKILLS -->
@@ -1270,66 +1414,29 @@ openclaw doctor                # audit and repair</code></pre>
       </div>
     </div>
 
-    <p>Skills teach the agent <em>when and how</em> to use tools. A skill is a Markdown file (<code>SKILL.md</code>) injected into the system prompt with YAML frontmatter and instructions.</p>
+    <p>Skills teach the agent <em>when and how</em> to use tools. A skill is a Markdown file (<code>SKILL.md</code>) injected into the system prompt.</p>
 
-    <h3>Three Layers</h3>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-content">
-          <h4>Tools — What the agent calls</h4>
-          <p style="font-size:13px;">A tool is a typed function the agent can invoke (e.g. <code>exec</code>, <code>browser</code>, <code>web_search</code>, <code>message</code>).</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-content">
-          <h4>Skills — Teach the agent when and how</h4>
-          <p style="font-size:13px;">A skill is a Markdown file injected into the system prompt. Skills give context, constraints, and step-by-step guidance for using tools effectively.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-content">
-          <h4>Plugins — Package everything together</h4>
-          <p style="font-size:13px;">A plugin registers any combination: channels, model providers, tools, skills, speech, image generation, and more.</p>
-        </div>
-      </div>
-    </div>
-
-    <h3>Skill Locations & Precedence</h3>
-    <p>Skills are loaded from three places (highest wins):</p>
+    <h3>Skill Locations (highest precedence first)</h3>
     <ol style="margin: 12px 0 12px 24px; color: #b8b0a6; font-size: 14px; line-height: 1.8;">
-      <li><code>&lt;workspace&gt;/skills</code> — highest precedence (per-agent)</li>
-      <li><code>~/.openclaw/skills</code> — managed/local skills (shared across agents)</li>
-      <li>Bundled skills — shipped with the install (lowest precedence)</li>
+      <li><code>&lt;workspace&gt;/skills</code> — per-agent skills</li>
+      <li><code>~/.openclaw/skills</code> — shared skills</li>
+      <li>Bundled skills — shipped with install</li>
     </ol>
 
-    <h3>SKILL.md Format</h3>
-    <pre><code>---
-name: image-lab
-description: Generate or edit images via a provider-backed image workflow
-metadata:
-  {
-    "openclaw": {
-      "emoji": "🖼️",
-      "requires": { "bins": ["uv"], "env": ["GEMINI_API_KEY"] },
-      "primaryEnv": "GEMINI_API_KEY",
-    },
-  }
----
-Your skill instructions here...
-</code></pre>
-
     <h3>ClawHub — Skills Registry</h3>
-    <p>Browse and install community skills from <a href="https://clawhub.ai" target="_blank">clawhub.ai</a>.</p>
     <pre><code># Install a skill
 openclaw skills install &lt;skill-slug&gt;
 
 # Update all installed skills
 openclaw skills update --all</code></pre>
 
-    <p>Full docs: <a href="https://docs.openclaw.ai/tools/skills" target="_blank">Skills →</a> | <a href="https://docs.openclaw.ai/tools/creating-skills" target="_blank">Creating Skills →</a> | <a href="https://docs.openclaw.ai/tools/clawhub" target="_blank">ClawHub →</a></p>
+    <div class="alert alert-warn">
+      <span class="alert-icon">⚠️</span>
+      <div class="alert-text">
+        <strong>Treat third-party skills as untrusted code.</strong>
+        Read them before enabling.
+      </div>
+    </div>
   </section>
 
   <!-- PLUGINS -->
@@ -1342,28 +1449,20 @@ openclaw skills update --all</code></pre>
       </div>
     </div>
 
-    <p>Plugins are npm packages that can register new channels, model providers, tools, skills, speech engines, image generation, and more. Core plugins ship with OpenClaw; external plugins are published by the community on npm.</p>
+    <p>Plugins are npm packages that register new channels, model providers, tools, skills, and more.</p>
 
-    <h3>Installing & Configuring Plugins</h3>
-    <p>See the full guide: <a href="https://docs.openclaw.ai/tools/plugin" target="_blank">Install and Configure Plugins →</a></p>
-
-    <h3>Plugin Bundles</h3>
-    <p>Bundles are curated sets of plugins for common setups. See <a href="https://docs.openclaw.ai/plugins/bundles" target="_blank">Plugin Bundles →</a></p>
-
-    <h3>Community Plugins</h3>
-    <p>Browse community-built plugins at <a href="https://docs.openclaw.ai/plugins/community" target="_blank">Community Plugins →</a></p>
-
-    <h3>Notable Plugin-Provided Tools</h3>
+    <h3>Notable Plugins</h3>
     <table>
-      <thead><tr><th>Plugin</th><th>What it provides</th><th>Docs</th></tr></thead>
+      <thead><tr><th>Plugin</th><th>What it provides</th></tr></thead>
       <tbody>
-        <tr><td>Lobster</td><td>Typed workflow runtime with resumable approvals</td><td><a href="https://docs.openclaw.ai/tools/lobster" target="_blank">Lobster →</a></td></tr>
-        <tr><td>LLM Task</td><td>JSON-only LLM step for structured output</td><td><a href="https://docs.openclaw.ai/tools/llm-task" target="_blank">LLM Task →</a></td></tr>
-        <tr><td>Diffs</td><td>Diff viewer and renderer</td><td><a href="https://docs.openclaw.ai/tools/diffs" target="_blank">Diffs →</a></td></tr>
-        <tr><td>OpenProse</td><td>Markdown-first workflow orchestration</td><td><a href="https://docs.openclaw.ai/prose" target="_blank">OpenProse →</a></td></tr>
-        <tr><td>Voice Call</td><td>Telephony via Plivo or Twilio</td><td><a href="https://docs.openclaw.ai/plugins/voice-call" target="_blank">Voice Call →</a></td></tr>
+        <tr><td>Lobster</td><td>Typed workflow runtime with resumable approvals</td></tr>
+        <tr><td>LLM Task</td><td>JSON-only LLM step for structured output</td></tr>
+        <tr><td>Voice Call</td><td>Telephony via Plivo or Twilio</td></tr>
+        <tr><td>OpenProse</td><td>Markdown-first workflow orchestration</td></tr>
       </tbody>
     </table>
+
+    <p>Full guide: <a href="https://docs.openclaw.ai/tools/plugin" target="_blank">Install and Configure Plugins →</a></p>
   </section>
 
   <!-- AUTOMATION & CRON -->
@@ -1376,7 +1475,7 @@ openclaw skills update --all</code></pre>
       </div>
     </div>
 
-    <p>Cron is the Gateway's built-in scheduler. It persists jobs, wakes the agent at the right time, and can optionally deliver output back to a chat. Jobs persist at <code>~/.openclaw/cron/jobs.json</code>.</p>
+    <p>Cron is the Gateway's built-in scheduler. Jobs persist at <code>~/.openclaw/cron/jobs.json</code>.</p>
 
     <h3>Quick Start</h3>
     <pre><code># One-shot reminder
@@ -1384,20 +1483,17 @@ openclaw cron add \
   --name "Reminder" \
   --at "2026-02-01T16:00:00Z" \
   --session main \
-  --system-event "Reminder: check the cron docs draft" \
+  --system-event "Reminder: check the project status" \
   --wake now \
   --delete-after-run
 
-# Recurring isolated job with Slack delivery
+# Recurring daily brief
 openclaw cron add \
   --name "Morning brief" \
   --cron "0 7 * * *" \
-  --tz "America/Los_Angeles" \
+  --tz "America/New_York" \
   --session isolated \
-  --message "Summarize overnight updates." \
-  --announce \
-  --channel slack \
-  --to "channel:C1234567890"</code></pre>
+  --message "Summarize overnight updates."</code></pre>
 
     <h3>Schedule Kinds</h3>
     <table>
@@ -1408,57 +1504,6 @@ openclaw cron add \
         <tr><td><code>cron</code></td><td>5/6-field cron expression</td><td><code>--cron "0 7 * * *"</code></td></tr>
       </tbody>
     </table>
-
-    <h3>Session Targets</h3>
-    <table>
-      <thead><tr><th>Target</th><th>Behavior</th></tr></thead>
-      <tbody>
-        <tr><td><code>main</code></td><td>Run during next heartbeat with main context</td></tr>
-        <tr><td><code>isolated</code></td><td>Dedicated agent turn in <code>cron:&lt;jobId&gt;</code></td></tr>
-        <tr><td><code>current</code></td><td>Bind to the session where cron was created</td></tr>
-        <tr><td><code>session:custom-id</code></td><td>Persistent named session (context preserved across runs)</td></tr>
-      </tbody>
-    </table>
-
-    <h3>Delivery Modes</h3>
-    <table>
-      <thead><tr><th>Mode</th><th>Behavior</th></tr></thead>
-      <tbody>
-        <tr><td><code>announce</code></td><td>Deliver output to target channel, brief summary to main session</td></tr>
-        <tr><td><code>webhook</code></td><td>POST finished event payload to a URL</td></tr>
-        <tr><td><code>none</code></td><td>Internal only, no delivery</td></tr>
-      </tbody>
-    </table>
-
-    <h3>Retry Policy</h3>
-    <p><strong>Transient errors (retried):</strong> Rate limit, provider overload, network errors, 5xx server errors.</p>
-    <p><strong>Permanent errors (disable immediately):</strong> Auth failures, config/validation errors.</p>
-
-    <h3>Other Automation</h3>
-    <div class="card-grid">
-      <div class="card"><a href="https://docs.openclaw.ai/automation/hooks" target="_blank">
-        <div class="card-icon">🪝</div>
-        <div class="card-title">Hooks</div>
-        <div class="card-desc">Event-driven hooks for custom automation triggers</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/automation/standing-orders" target="_blank">
-        <div class="card-icon">📋</div>
-        <div class="card-title">Standing Orders</div>
-        <div class="card-desc">Persistent instructions that apply to every agent turn</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/automation/webhook" target="_blank">
-        <div class="card-icon">🌐</div>
-        <div class="card-title">Webhooks</div>
-        <div class="card-desc">Receive external events and trigger agent actions</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/automation/gmail-pubsub" target="_blank">
-        <div class="card-icon">📧</div>
-        <div class="card-title">Gmail PubSub</div>
-        <div class="card-desc">Real-time Gmail integration via Google PubSub</div>
-      </a></div>
-    </div>
-
-    <p>Full cron docs: <a href="https://docs.openclaw.ai/automation/cron-jobs" target="_blank">Cron Jobs →</a> | <a href="https://docs.openclaw.ai/automation/cron-vs-heartbeat" target="_blank">Cron vs Heartbeat →</a></p>
   </section>
 
   <hr class="divider">
@@ -1473,52 +1518,43 @@ openclaw cron add \
       </div>
     </div>
 
-    <p>OpenClaw supports 35+ LLM providers. Pick a provider, authenticate, then set the default model as <code>provider/model</code>.</p>
-
-    <pre><code>{
-  agents: {
-    defaults: {
-      model: { primary: "anthropic/claude-opus-4-6" }
-    }
-  },
-}</code></pre>
+    <p>OpenClaw supports 35+ LLM providers. Set the default model as <code>provider/model</code>.</p>
 
     <h3>Supported Providers</h3>
     <div class="provider-grid">
       <a href="https://docs.openclaw.ai/providers/anthropic" target="_blank" class="provider-pill">Anthropic</a>
       <a href="https://docs.openclaw.ai/providers/openai" target="_blank" class="provider-pill">OpenAI</a>
       <a href="https://docs.openclaw.ai/providers/google" target="_blank" class="provider-pill">Google (Gemini)</a>
-      <a href="https://docs.openclaw.ai/providers/bedrock" target="_blank" class="provider-pill">Amazon Bedrock</a>
       <a href="https://docs.openclaw.ai/providers/ollama" target="_blank" class="provider-pill">Ollama (local)</a>
       <a href="https://docs.openclaw.ai/providers/openrouter" target="_blank" class="provider-pill">OpenRouter</a>
       <a href="https://docs.openclaw.ai/providers/groq" target="_blank" class="provider-pill">Groq</a>
       <a href="https://docs.openclaw.ai/providers/mistral" target="_blank" class="provider-pill">Mistral</a>
       <a href="https://docs.openclaw.ai/providers/deepseek" target="_blank" class="provider-pill">DeepSeek</a>
       <a href="https://docs.openclaw.ai/providers/xai" target="_blank" class="provider-pill">xAI (Grok)</a>
-      <a href="https://docs.openclaw.ai/providers/minimax" target="_blank" class="provider-pill">MiniMax</a>
-      <a href="https://docs.openclaw.ai/providers/perplexity-provider" target="_blank" class="provider-pill">Perplexity</a>
       <a href="https://docs.openclaw.ai/providers/together" target="_blank" class="provider-pill">Together AI</a>
-      <a href="https://docs.openclaw.ai/providers/litellm" target="_blank" class="provider-pill">LiteLLM</a>
-      <a href="https://docs.openclaw.ai/providers/github-copilot" target="_blank" class="provider-pill">GitHub Copilot</a>
-      <a href="https://docs.openclaw.ai/providers/venice" target="_blank" class="provider-pill">Venice AI</a>
-      <a href="https://docs.openclaw.ai/providers/nvidia" target="_blank" class="provider-pill">NVIDIA</a>
-      <a href="https://docs.openclaw.ai/providers/qwen" target="_blank" class="provider-pill">Qwen</a>
-      <a href="https://docs.openclaw.ai/providers/moonshot" target="_blank" class="provider-pill">Moonshot AI (Kimi)</a>
       <a href="https://docs.openclaw.ai/providers/vllm" target="_blank" class="provider-pill">vLLM (local)</a>
       <a href="https://docs.openclaw.ai/providers/sglang" target="_blank" class="provider-pill">SGLang (local)</a>
-      <a href="https://docs.openclaw.ai/providers/huggingface" target="_blank" class="provider-pill">Hugging Face</a>
-      <a href="https://docs.openclaw.ai/providers/cloudflare-ai-gateway" target="_blank" class="provider-pill">Cloudflare AI Gateway</a>
-      <a href="https://docs.openclaw.ai/providers/vercel-ai-gateway" target="_blank" class="provider-pill">Vercel AI Gateway</a>
-      <a href="https://docs.openclaw.ai/providers/claude-max-api-proxy" target="_blank" class="provider-pill">Claude Max Proxy ⚠️</a>
     </div>
 
-    <h3>Model Failover</h3>
-    <p>Configure automatic failover between providers when a model is unavailable. See <a href="https://docs.openclaw.ai/concepts/model-failover" target="_blank">Model Failover →</a></p>
-
-    <h3>Transcription Providers</h3>
-    <p><a href="https://docs.openclaw.ai/providers/deepgram" target="_blank">Deepgram</a> — Audio transcription for voice notes.</p>
-
-    <p>Full directory: <a href="https://docs.openclaw.ai/providers" target="_blank">Provider Directory →</a></p>
+    <h3>Ollama Provider Configuration</h3>
+    <p>For local models, configure Ollama in the agent's <code>models.json</code>:</p>
+    <pre><code>{
+  "providers": {
+    "ollama": {
+      "baseUrl": "http://127.0.0.1:11434",
+      "api": "ollama",
+      "models": [
+        {
+          "id": "qwen2.5:14b",
+          "name": "qwen2.5:14b",
+          "contextWindow": 32768,
+          "maxTokens": 8192
+        }
+      ]
+    }
+  },
+  "default": "ollama/qwen2.5:14b"
+}</code></pre>
   </section>
 
   <!-- PLATFORMS -->
@@ -1531,39 +1567,30 @@ openclaw cron add \
       </div>
     </div>
 
-    <p>OpenClaw core is written in TypeScript. <strong>Node is the recommended runtime.</strong> Bun is not recommended for the Gateway (WhatsApp/Telegram bugs).</p>
+    <p><strong>Node is the recommended runtime.</strong> Bun is not recommended for the Gateway (WhatsApp/Telegram bugs).</p>
 
     <div class="card-grid">
-      <div class="card"><a href="https://docs.openclaw.ai/platforms/macos" target="_blank">
+      <div class="card">
         <div class="card-icon">🍎</div>
         <div class="card-title">macOS</div>
-        <div class="card-desc">Full support with companion menu bar app, Canvas, voice wake, camera. macOS 15+.</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/platforms/linux" target="_blank">
+        <div class="card-desc">Full support with companion menu bar app. macOS 15+.</div>
+      </div>
+      <div class="card">
         <div class="card-icon">🐧</div>
         <div class="card-title">Linux</div>
-        <div class="card-desc">Full Gateway support. Companion app planned. Run as systemd service.</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/platforms/windows" target="_blank">
+        <div class="card-desc">Full Gateway support. Use Ubuntu 24.04 LTS for AMD GPUs.</div>
+      </div>
+      <div class="card">
         <div class="card-icon">🪟</div>
         <div class="card-title">Windows</div>
-        <div class="card-desc">Native Windows and WSL2 supported. WSL2 is more stable and recommended.</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/platforms/ios" target="_blank">
+        <div class="card-desc">WSL2 is more stable than native Windows.</div>
+      </div>
+      <div class="card">
         <div class="card-icon">📱</div>
-        <div class="card-title">iOS</div>
-        <div class="card-desc">Node app with pairing, Canvas, camera, screen recording, location, voice.</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/platforms/android" target="_blank">
-        <div class="card-icon">🤖</div>
-        <div class="card-title">Android</div>
-        <div class="card-desc">Node app with pairing, chat, voice, Canvas, camera, device commands.</div>
-      </a></div>
+        <div class="card-title">iOS / Android</div>
+        <div class="card-desc">Node apps with pairing, Canvas, camera, voice.</div>
+      </div>
     </div>
-
-    <h3>macOS Companion App</h3>
-    <p>Download from <a href="https://github.com/openclaw/openclaw/releases/latest" target="_blank">GitHub Releases</a>. Requires macOS 15+, Universal Binary. Features menu bar access, gateway lifecycle management, Canvas, voice wake, and more.</p>
-    <p>macOS-specific docs: <a href="https://docs.openclaw.ai/platforms/mac/menu-bar" target="_blank">Menu Bar →</a> | <a href="https://docs.openclaw.ai/platforms/mac/canvas" target="_blank">Canvas →</a> | <a href="https://docs.openclaw.ai/platforms/mac/voicewake" target="_blank">Voice Wake →</a> | <a href="https://docs.openclaw.ai/platforms/mac/permissions" target="_blank">Permissions →</a></p>
   </section>
 
   <!-- HOSTING -->
@@ -1576,53 +1603,30 @@ openclaw cron add \
       </div>
     </div>
 
-    <p>Deploy OpenClaw on a cloud server or VPS for 24/7 availability. Use the <a href="https://docs.openclaw.ai/vps" target="_blank">VPS hub</a> for general Linux VPS guidance.</p>
+    <p>Deploy OpenClaw on a cloud server or VPS for 24/7 availability.</p>
 
     <div class="card-grid">
       <div class="card"><a href="https://docs.openclaw.ai/install/fly" target="_blank">
         <div class="card-icon">🚀</div><div class="card-title">Fly.io</div>
-        <div class="card-desc">Simple container-based deployment with free tier</div>
+        <div class="card-desc">Simple container-based with free tier</div>
       </a></div>
       <div class="card"><a href="https://docs.openclaw.ai/install/hetzner" target="_blank">
         <div class="card-icon">🖥️</div><div class="card-title">Hetzner</div>
-        <div class="card-desc">Affordable German cloud VPS with Docker</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/install/gcp" target="_blank">
-        <div class="card-icon">☁️</div><div class="card-title">Google Cloud</div>
-        <div class="card-desc">Compute Engine VMs</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/install/azure" target="_blank">
-        <div class="card-icon">🔵</div><div class="card-title">Azure</div>
-        <div class="card-desc">Azure Linux VM deployment</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/install/railway" target="_blank">
-        <div class="card-icon">🚂</div><div class="card-title">Railway</div>
-        <div class="card-desc">Simple deployment with Railway platform</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/install/render" target="_blank">
-        <div class="card-icon">🌟</div><div class="card-title">Render</div>
-        <div class="card-desc">Managed cloud hosting</div>
+        <div class="card-desc">Affordable German cloud VPS</div>
       </a></div>
       <div class="card"><a href="https://docs.openclaw.ai/install/digitalocean" target="_blank">
         <div class="card-icon">🌊</div><div class="card-title">DigitalOcean</div>
         <div class="card-desc">Droplets and App Platform</div>
       </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/install/oracle" target="_blank">
-        <div class="card-icon">🔴</div><div class="card-title">Oracle Cloud</div>
-        <div class="card-desc">Oracle Cloud Infrastructure (always free tier available)</div>
-      </a></div>
       <div class="card"><a href="https://docs.openclaw.ai/install/raspberry-pi" target="_blank">
         <div class="card-icon">🫐</div><div class="card-title">Raspberry Pi</div>
-        <div class="card-desc">Run your lobster on a Pi at home</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/install/kubernetes" target="_blank">
-        <div class="card-icon">☸️</div><div class="card-title">Kubernetes</div>
-        <div class="card-desc">K8s deployment for production scale</div>
+        <div class="card-desc">Run at home on a Pi</div>
       </a></div>
     </div>
 
     <h3>Remote Access</h3>
-    <p><a href="https://docs.openclaw.ai/gateway/tailscale" target="_blank">Tailscale</a> is the recommended approach for remote access — connects your devices in a private tailnet. SSH tunneling also works: <code>ssh -N -L 18789:127.0.0.1:18789 user@host</code></p>
+    <p><a href="https://docs.openclaw.ai/gateway/tailscale" target="_blank">Tailscale</a> is recommended for remote access. SSH tunneling also works:</p>
+    <pre><code>ssh -N -L 18789:127.0.0.1:18789 user@host</code></pre>
   </section>
 
   <hr class="divider">
@@ -1637,55 +1641,63 @@ openclaw cron add \
       </div>
     </div>
 
-    <p>Config lives at <code>~/.openclaw/openclaw.json</code>. If you do nothing, OpenClaw uses sensible defaults. Example config:</p>
+    <p>Config lives at <code>~/.openclaw/openclaw.json</code>. Use <code>openclaw config</code> commands to modify safely.</p>
 
+    <h3>Useful Config Commands</h3>
+    <pre><code># View current config
+openclaw config get agents
+
+# Set a value
+openclaw config set gateway.port 19001 --strict-json
+
+# Validate config
+openclaw config validate
+
+# Get config file path
+openclaw config file</code></pre>
+
+    <h3>Example Multi-Agent Config Structure</h3>
     <pre><code>{
-  // Channel config
-  channels: {
-    whatsapp: {
-      allowFrom: ["+15555550123"],
-      groups: { "*": { requireMention: true } },
+  "agents": {
+    "defaults": {
+      "model": { "primary": "openai-codex/gpt-5.4" },
+      "workspace": "~/.openclaw/workspace/shared",
+      "maxConcurrent": 4,
+      "subagents": { "maxConcurrent": 8 }
     },
+    "list": [
+      {
+        "id": "main",
+        "subagents": {
+          "allowAgents": ["scout", "scribe", "pixel", "pulse"]
+        }
+      },
+      {
+        "id": "scout",
+        "workspace": "~/.openclaw/workspace/shared",
+        "agentDir": "~/.openclaw/agents/scout/agent"
+      },
+      // ... more agents
+    ]
   },
-
-  // Default model
-  agents: {
-    defaults: {
-      model: { primary: "anthropic/claude-opus-4-6" },
-      workspace: "~/.openclaw/workspace",
-    },
-  },
-
-  // Tool restrictions
-  tools: {
-    profile: "coding",
-    allow: ["group:fs", "browser", "web_search"],
-    deny: ["exec"],
-  },
-
-  // Cron settings
-  cron: {
-    enabled: true,
-    sessionRetention: "24h",
-  },
-
-  // Gateway settings
-  gateway: {
-    port: 18789,
-    bind: "loopback",
-    reload: { mode: "hybrid" },
-    auth: { token: "your-secret-token" },
-  },
-
-  // Skills
-  skills: {
-    entries: {
-      "my-skill": { enabled: true },
-    },
-  },
+  "tools": { "profile": "full" },
+  "gateway": {
+    "port": 18789,
+    "bind": "loopback"
+  }
 }</code></pre>
 
-    <p>Full configuration reference: <a href="https://docs.openclaw.ai/gateway/configuration" target="_blank">Gateway Configuration →</a></p>
+    <div class="alert alert-warn">
+      <span class="alert-icon">⚠️</span>
+      <div class="alert-text">
+        <strong>Config Schema Gotchas</strong>
+        <ul style="margin: 8px 0 0 16px; font-size: 12px;">
+          <li>Use <code>agents.list[]</code> array format, not <code>agents.boss</code></li>
+          <li>Sub-agent permissions go in <code>agents.list.0.subagents.allowAgents</code></li>
+          <li><code>memorySearch</code> goes under <code>agents.defaults</code>, not top-level</li>
+        </ul>
+      </div>
+    </div>
   </section>
 
   <!-- SECURITY -->
@@ -1702,23 +1714,15 @@ openclaw cron add \
       <span class="alert-icon">⚠️</span>
       <div class="alert-text">
         <strong>Treat third-party skills as untrusted code.</strong>
-        Read them before enabling. Prefer sandboxed runs for untrusted inputs and risky tools.
+        Read them before enabling. Prefer sandboxed runs for untrusted inputs.
       </div>
     </div>
-
-    <h3>Pairing & Trust</h3>
-    <p>All WebSocket clients include a <strong>device identity</strong> on connect. New device IDs require pairing approval. The Gateway issues a device token for subsequent connects. Local connects (loopback) can be auto-approved.</p>
 
     <h3>Allowlists</h3>
     <p>Control who can message your agent with <code>channels.*.allowFrom</code> per channel. Use <code>groups.*.requireMention</code> to require @mention in group chats.</p>
 
     <h3>Sandboxing</h3>
-    <p>Run the agent in a sandboxed Docker container for untrusted inputs. Configure via <code>agents.defaults.sandbox.docker</code>. See <a href="https://docs.openclaw.ai/gateway/sandboxing" target="_blank">Sandboxing →</a></p>
-
-    <h3>Formal Verification & Threat Model</h3>
-    <p>OpenClaw publishes a formal threat model using MITRE ATLAS. See: <a href="https://docs.openclaw.ai/security/formal-verification" target="_blank">Formal Verification →</a> | <a href="https://docs.openclaw.ai/security/THREAT-MODEL-ATLAS" target="_blank">Threat Model →</a></p>
-
-    <p>Full security docs: <a href="https://docs.openclaw.ai/gateway/security" target="_blank">Security →</a></p>
+    <p>Run the agent in a sandboxed Docker container for untrusted inputs. Configure via <code>agents.defaults.sandbox.docker</code>.</p>
   </section>
 
   <!-- HELP & TROUBLESHOOTING -->
@@ -1731,56 +1735,88 @@ openclaw cron add \
       </div>
     </div>
 
-    <div class="card-grid">
-      <div class="card"><a href="https://docs.openclaw.ai/help/troubleshooting" target="_blank">
-        <div class="card-icon">🔍</div>
-        <div class="card-title">Troubleshooting</div>
-        <div class="card-desc">Symptom-first diagnostics — start here when something is broken</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/help/faq" target="_blank">
-        <div class="card-icon">❓</div>
-        <div class="card-title">FAQ</div>
-        <div class="card-desc">Conceptual questions answered</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/gateway/troubleshooting" target="_blank">
-        <div class="card-icon">🌐</div>
-        <div class="card-title">Gateway Issues</div>
-        <div class="card-desc">Gateway-specific diagnostics and error messages</div>
-      </a></div>
-      <div class="card"><a href="https://docs.openclaw.ai/gateway/doctor" target="_blank">
-        <div class="card-icon">🩺</div>
-        <div class="card-title">Doctor</div>
-        <div class="card-desc">Audit and repair your OpenClaw installation</div>
-      </a></div>
-    </div>
-
-    <h3>Quick Fixes</h3>
-    <pre><code># Run the full health check
+    <h3>Quick Diagnostic Commands</h3>
+    <pre><code># Full health check
 openclaw doctor
 
-# Check Node version
-node --version  # Should be 22.14+ or 24
-
-# Check global npm path
-npm prefix -g
-echo "$PATH"
+# Check Node version (needs 22.14+ or 24)
+node --version
 
 # Restart the gateway
 openclaw gateway restart
 
-# View logs
-openclaw logs --follow</code></pre>
+# View live logs
+openclaw logs --follow
 
-    <h3>More Debug Resources</h3>
-    <p>
-      <a href="https://docs.openclaw.ai/help/environment" target="_blank">Environment Variables →</a> |
-      <a href="https://docs.openclaw.ai/help/debugging" target="_blank">Debugging →</a> |
-      <a href="https://docs.openclaw.ai/help/testing" target="_blank">Testing →</a> |
-      <a href="https://docs.openclaw.ai/diagnostics/flags" target="_blank">Diagnostics Flags →</a> |
-      <a href="https://docs.openclaw.ai/install/updating" target="_blank">Updating →</a> |
-      <a href="https://docs.openclaw.ai/install/migrating" target="_blank">Migration Guide →</a> |
-      <a href="https://docs.openclaw.ai/install/uninstall" target="_blank">Uninstall →</a>
-    </p>
+# Deep status check
+openclaw gateway status --deep
+
+# Clear stale sessions
+rm -rf ~/.openclaw/agents/main/sessions/*</code></pre>
+
+    <h3>Common Problems & Solutions</h3>
+    <table>
+      <thead><tr><th>Problem</th><th>Solution</th></tr></thead>
+      <tbody>
+        <tr><td><code>openclaw not found</code></td><td>Add <code>$(npm prefix -g)/bin</code> to PATH</td></tr>
+        <tr><td>Gateway won't start (EADDRINUSE)</td><td>Another instance running. Use <code>openclaw gateway stop</code></td></tr>
+        <tr><td>WhatsApp disconnects</td><td>Re-run QR pairing: <code>openclaw channels whatsapp pair</code></td></tr>
+        <tr><td>Sub-agents not spawnable</td><td>Set <code>agents.list.0.subagents.allowAgents</code></td></tr>
+        <tr><td>Wrong model being used</td><td>Check agent's <code>models.json</code>, clear sessions</td></tr>
+        <tr><td>Config validation fails</td><td>Check for invalid keys, use <code>openclaw config validate</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- LESSONS LEARNED -->
+  <section class="section" id="lessons">
+    <div class="section-header">
+      <div class="section-icon">📝</div>
+      <div>
+        <div class="section-num">20 — Lessons Learned</div>
+        <h2>Battle-Tested Lessons</h2>
+      </div>
+    </div>
+
+    <p>Hard-won knowledge from real-world configuration and troubleshooting:</p>
+
+    <h3>Ubuntu & ROCm</h3>
+    <div class="alert alert-warn">
+      <span class="alert-icon">🔴</span>
+      <div class="alert-text">
+        <strong>Ubuntu 24.04 LTS Required for AMD GPUs</strong>
+        Ubuntu 25.x ships kernel 6.14 which breaks ROCm DKMS builds. If ROCm install fails with DKMS errors, do a fresh Ubuntu 24.04.4 LTS install.
+      </div>
+    </div>
+
+    <h3>Config Schema Gotchas</h3>
+    <ul style="margin: 12px 0 12px 24px; color: #b8b0a6; font-size: 14px; line-height: 2;">
+      <li><strong>agents.list[] array format</strong> — Don't use <code>agents.boss</code>, <code>agents.scout</code> etc. Use array.</li>
+      <li><strong>Sub-agent permissions</strong> — <code>agents.list.0.subagents.allowAgents</code> is required for delegation.</li>
+      <li><strong>No top-level providers/routing</strong> — These keys cause validation errors.</li>
+      <li><strong>memorySearch under defaults</strong> — Goes in <code>agents.defaults.memorySearch</code>, not root.</li>
+    </ul>
+
+    <h3>Multi-Agent Setup</h3>
+    <ul style="margin: 12px 0 12px 24px; color: #b8b0a6; font-size: 14px; line-height: 2;">
+      <li><strong>Add agents via CLI</strong> — Use <code>openclaw agents add</code>, not config editing.</li>
+      <li><strong>Each sub-agent needs models.json</strong> — Even if using same model as another agent.</li>
+      <li><strong>Team info in USER.md</strong> — Main agent reads USER.md, not SYSTEM.md for user context.</li>
+      <li><strong>Clear sessions after config changes</strong> — <code>rm -rf ~/.openclaw/agents/main/sessions/*</code></li>
+    </ul>
+
+    <h3>PATH Issues</h3>
+    <ul style="margin: 12px 0 12px 24px; color: #b8b0a6; font-size: 14px; line-height: 2;">
+      <li><strong>npm global bin not in PATH</strong> — Add to ~/.bashrc: <code>export PATH="$(npm prefix -g)/bin:$PATH"</code></li>
+      <li><strong>Source after editing</strong> — Run <code>source ~/.bashrc</code> or open new terminal.</li>
+    </ul>
+
+    <h3>Ollama + GPU</h3>
+    <ul style="margin: 12px 0 12px 24px; color: #b8b0a6; font-size: 14px; line-height: 2;">
+      <li><strong>Verify GPU usage</strong> — Use <code>rocm-smi</code> during inference to confirm GPU acceleration.</li>
+      <li><strong>Model sizes matter</strong> — 14B models need ~9GB VRAM, 8B needs ~5GB, 7B needs ~4.5GB.</li>
+      <li><strong>Install ROCm before Ollama</strong> — Ollama detects GPU at install time.</li>
+    </ul>
   </section>
 
   <!-- COMMUNITY -->
@@ -1788,7 +1824,7 @@ openclaw logs --follow</code></pre>
     <div class="section-header">
       <div class="section-icon">🌐</div>
       <div>
-        <div class="section-num">20 — Community</div>
+        <div class="section-num">21 — Community</div>
         <h2>Community & Resources</h2>
       </div>
     </div>
@@ -1797,32 +1833,22 @@ openclaw logs --follow</code></pre>
       <div class="card"><a href="https://discord.com/invite/clawd" target="_blank">
         <div class="card-icon">💬</div>
         <div class="card-title">Discord</div>
-        <div class="card-desc">Join the community. Get help, share builds, discuss features.</div>
+        <div class="card-desc">Join the community. Get help, share builds.</div>
       </a></div>
       <div class="card"><a href="https://github.com/openclaw/openclaw" target="_blank">
         <div class="card-icon">⭐</div>
         <div class="card-title">GitHub</div>
-        <div class="card-desc">Source code, issues, releases, and contributions.</div>
+        <div class="card-desc">Source code, issues, releases.</div>
       </a></div>
       <div class="card"><a href="https://clawhub.ai" target="_blank">
         <div class="card-icon">🛒</div>
         <div class="card-title">ClawHub</div>
-        <div class="card-desc">Community skills registry. Browse and install skills.</div>
+        <div class="card-desc">Community skills registry.</div>
       </a></div>
       <div class="card"><a href="https://openclaw.ai/showcase" target="_blank">
         <div class="card-icon">🎪</div>
         <div class="card-title">Showcase</div>
-        <div class="card-desc">See what people have built with OpenClaw.</div>
-      </a></div>
-      <div class="card"><a href="https://openclaw.ai/blog" target="_blank">
-        <div class="card-icon">📝</div>
-        <div class="card-title">Blog</div>
-        <div class="card-desc">Updates, announcements, and articles.</div>
-      </a></div>
-      <div class="card"><a href="https://openclaw.ai/integrations" target="_blank">
-        <div class="card-icon">🔗</div>
-        <div class="card-title">50+ Integrations</div>
-        <div class="card-desc">Browse all supported integrations and tools.</div>
+        <div class="card-desc">See what people built.</div>
       </a></div>
     </div>
 
@@ -1832,27 +1858,13 @@ openclaw logs --follow</code></pre>
     </div>
 
     <h3>Key People</h3>
-    <p>OpenClaw is built by <a href="https://steipete.me" target="_blank">Peter Steinberger</a> (@steipete) and the community. The AI agent persona is "Molty" 🦞 — a space lobster with a <a href="https://soul.md" target="_blank">soul</a>.</p>
-
-    <h3>Sponsors</h3>
-    <p>OpenClaw is sponsored by <a href="https://openai.com" target="_blank">OpenAI</a>, <a href="https://vercel.com" target="_blank">Vercel</a>, <a href="https://blacksmith.sh" target="_blank">Blacksmith</a>, and <a href="https://www.convex.dev" target="_blank">Convex</a>.</p>
-
-    <h3>Press</h3>
-    <p>Featured in <a href="https://www.macstories.net/stories/clawdbot-showed-me-what-the-future-of-personal-ai-assistants-looks-like/" target="_blank">MacStories</a>: "OpenClaw Showed Me What the Future of Personal AI Assistants Looks Like" by Federico Viticci.</p>
-
-    <h3>Docs Meta</h3>
-    <p>
-      <a href="https://docs.openclaw.ai/start/hubs" target="_blank">Docs Hubs →</a> |
-      <a href="https://docs.openclaw.ai/start/docs-directory" target="_blank">Docs Directory →</a> |
-      <a href="https://docs.openclaw.ai/start/lore" target="_blank">OpenClaw Lore →</a> |
-      <a href="https://docs.openclaw.ai/start/showcase" target="_blank">Showcase →</a>
-    </p>
+    <p>OpenClaw is built by <a href="https://steipete.me" target="_blank">Peter Steinberger</a> (@steipete) and the community. The AI agent persona is "Molty" 🦞 — a space lobster with a soul.</p>
 
     <div class="alert alert-info">
       <span class="alert-icon">ℹ️</span>
       <div class="alert-text">
         <strong>Independent project.</strong>
-        OpenClaw is not affiliated with Anthropic. MIT licensed and community-driven. Trust page: <a href="https://trust.openclaw.ai/" target="_blank">trust.openclaw.ai →</a>
+        OpenClaw is not affiliated with Anthropic. MIT licensed and community-driven.
       </div>
     </div>
   </section>
