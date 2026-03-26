@@ -1,0 +1,1908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw — The Complete Guide 🦞</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --claw-red: #e8382a;
+    --claw-orange: #f56b2a;
+    --claw-dark: #0d0d0d;
+    --claw-darker: #080808;
+    --claw-surface: #141414;
+    --claw-surface2: #1c1c1c;
+    --claw-border: #2a2a2a;
+    --claw-text: #e8e0d5;
+    --claw-muted: #7a7268;
+    --claw-accent: #f5c842;
+    --claw-green: #3dd68c;
+    --claw-blue: #4fa3e8;
+    --sidebar-w: 280px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--claw-darker);
+    color: var(--claw-text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ─── SIDEBAR ─── */
+  #sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    background: var(--claw-dark);
+    border-right: 1px solid var(--claw-border);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--claw-border); border-radius: 2px; }
+
+  .sidebar-logo {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid var(--claw-border);
+    flex-shrink: 0;
+  }
+
+  .sidebar-logo .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .sidebar-logo .logo-emoji { font-size: 22px; }
+
+  .sidebar-logo .logo-sub {
+    font-size: 10px;
+    color: var(--claw-muted);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .sidebar-nav {
+    padding: 12px 0;
+    flex: 1;
+  }
+
+  .nav-section-label {
+    font-size: 9px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--claw-muted);
+    padding: 14px 20px 6px;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 20px;
+    color: #9a9089;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 400;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-link:hover {
+    color: var(--claw-text);
+    background: var(--claw-surface);
+    border-left-color: var(--claw-orange);
+  }
+
+  .nav-link.active {
+    color: var(--claw-orange);
+    border-left-color: var(--claw-orange);
+    background: rgba(245, 107, 42, 0.06);
+  }
+
+  .nav-link .nav-icon { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
+
+  .sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--claw-border);
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .sidebar-footer a {
+    font-size: 11px;
+    color: var(--claw-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .sidebar-footer a:hover { color: var(--claw-orange); }
+
+  /* ─── MAIN ─── */
+  #main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    max-width: 860px;
+    padding: 0 48px 80px 64px;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 64px 0 48px;
+    border-bottom: 1px solid var(--claw-border);
+    margin-bottom: 56px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(232, 56, 42, 0.12);
+    border: 1px solid rgba(232, 56, 42, 0.3);
+    color: var(--claw-red);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(36px, 5vw, 56px);
+    color: #fff;
+    line-height: 1.08;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(90deg, var(--claw-orange), var(--claw-red));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-desc {
+    font-size: 17px;
+    color: #9a9089;
+    max-width: 600px;
+    line-height: 1.65;
+    margin-bottom: 32px;
+    font-weight: 300;
+  }
+
+  .hero-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 3px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .btn-primary {
+    background: var(--claw-orange);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--claw-red); transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--claw-text);
+    border: 1px solid var(--claw-border);
+  }
+  .btn-ghost:hover { border-color: var(--claw-orange); color: var(--claw-orange); }
+
+  /* ─── SECTIONS ─── */
+  .section {
+    margin-bottom: 72px;
+    scroll-margin-top: 24px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--claw-border);
+  }
+
+  .section-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--claw-orange), var(--claw-red));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .section-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #fff;
+  }
+
+  .section-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--claw-muted);
+    letter-spacing: 0.08em;
+  }
+
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--claw-text);
+    margin: 28px 0 12px;
+  }
+
+  h4 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--claw-text);
+    margin: 18px 0 8px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  p { margin-bottom: 14px; color: #b8b0a6; }
+  p strong { color: var(--claw-text); font-weight: 500; }
+
+  a { color: var(--claw-orange); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ─── CODE ─── */
+  code {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    background: var(--claw-surface2);
+    border: 1px solid var(--claw-border);
+    border-radius: 3px;
+    padding: 1px 6px;
+    color: var(--claw-accent);
+  }
+
+  pre {
+    background: var(--claw-surface);
+    border: 1px solid var(--claw-border);
+    border-radius: 6px;
+    padding: 20px;
+    overflow-x: auto;
+    margin: 16px 0;
+    position: relative;
+  }
+
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    color: #d4c9bc;
+    line-height: 1.6;
+  }
+
+  .code-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--claw-muted);
+    margin-bottom: 8px;
+  }
+
+  /* ─── CARDS ─── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .card {
+    background: var(--claw-surface);
+    border: 1px solid var(--claw-border);
+    border-radius: 8px;
+    padding: 18px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--claw-orange), var(--claw-red));
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .card:hover::before { opacity: 1; }
+  .card:hover { border-color: rgba(245, 107, 42, 0.3); transform: translateY(-2px); }
+
+  .card-icon { font-size: 22px; margin-bottom: 10px; }
+  .card-title { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 14px; color: #fff; margin-bottom: 6px; }
+  .card-desc { font-size: 12px; color: var(--claw-muted); line-height: 1.5; }
+  .card a { color: inherit; text-decoration: none; display: block; }
+
+  /* ─── ALERT BOXES ─── */
+  .alert {
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 13.5px;
+    border-left: 3px solid;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .alert-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+  .alert-text { flex: 1; color: #b8b0a6; }
+  .alert-text strong { display: block; margin-bottom: 2px; }
+
+  .alert-tip { background: rgba(61, 214, 140, 0.06); border-color: var(--claw-green); }
+  .alert-tip .alert-icon { color: var(--claw-green); }
+  .alert-tip .alert-text strong { color: var(--claw-green); }
+
+  .alert-warn { background: rgba(245, 200, 66, 0.06); border-color: var(--claw-accent); }
+  .alert-warn .alert-icon { color: var(--claw-accent); }
+  .alert-warn .alert-text strong { color: var(--claw-accent); }
+
+  .alert-info { background: rgba(79, 163, 232, 0.06); border-color: var(--claw-blue); }
+  .alert-info .alert-icon { color: var(--claw-blue); }
+  .alert-info .alert-text strong { color: var(--claw-blue); }
+
+  /* ─── STEPS ─── */
+  .steps { margin: 20px 0; }
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 32px;
+    bottom: -8px;
+    width: 1px;
+    background: var(--claw-border);
+  }
+
+  .step-num {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--claw-orange), var(--claw-red));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+
+  .step-content { flex: 1; padding-top: 4px; }
+  .step-content h4 { margin: 0 0 6px; font-size: 14px; }
+
+  /* ─── TABLE ─── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+
+  thead th {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--claw-muted);
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--claw-border);
+  }
+
+  tbody td {
+    padding: 10px 14px;
+    color: #b8b0a6;
+    border-bottom: 1px solid rgba(42, 42, 42, 0.5);
+    vertical-align: top;
+  }
+
+  tbody tr:hover td { background: var(--claw-surface); }
+
+  .tag {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 2px;
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .tag-green { background: rgba(61, 214, 140, 0.15); color: var(--claw-green); }
+  .tag-blue { background: rgba(79, 163, 232, 0.15); color: var(--claw-blue); }
+  .tag-orange { background: rgba(245, 107, 42, 0.15); color: var(--claw-orange); }
+  .tag-yellow { background: rgba(245, 200, 66, 0.15); color: var(--claw-accent); }
+
+  /* ─── CHANNEL LIST ─── */
+  .channel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin: 16px 0;
+  }
+
+  .channel-item {
+    background: var(--claw-surface);
+    border: 1px solid var(--claw-border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    transition: border-color 0.15s;
+    text-decoration: none;
+    color: var(--claw-text);
+  }
+
+  .channel-item:hover { border-color: var(--claw-orange); text-decoration: none; color: var(--claw-orange); }
+  .channel-item .ch-emoji { font-size: 16px; }
+
+  /* ─── PROVIDER GRID ─── */
+  .provider-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .provider-pill {
+    background: var(--claw-surface2);
+    border: 1px solid var(--claw-border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: #9a9089;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+
+  .provider-pill:hover {
+    border-color: var(--claw-orange);
+    color: var(--claw-orange);
+    text-decoration: none;
+  }
+
+  /* ─── QUOTE ─── */
+  .quote-strip {
+    background: var(--claw-surface);
+    border-left: 3px solid var(--claw-orange);
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 6px 6px 0;
+    font-style: italic;
+    font-size: 14px;
+    color: #9a9089;
+  }
+
+  .quote-strip cite {
+    display: block;
+    margin-top: 8px;
+    font-style: normal;
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    color: var(--claw-muted);
+  }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--claw-border);
+    margin: 40px 0;
+  }
+
+  /* ─── SCROLL TOP ─── */
+  #scroll-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 40px; height: 40px;
+    background: var(--claw-orange);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.2s;
+    border: none;
+    font-size: 18px;
+    z-index: 200;
+  }
+
+  #scroll-top.visible { opacity: 1; transform: translateY(0); }
+  #scroll-top:hover { background: var(--claw-red); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); transition: transform 0.25s; }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; padding: 0 20px 60px; }
+    .hero { padding: 40px 0 32px; }
+    .card-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero { animation: fadeInUp 0.5s ease both; }
+  .section { animation: fadeInUp 0.5s ease both; }
+
+  /* Lobster cursor easter egg */
+  body { cursor: default; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <a href="#top" class="logo-text"><span class="logo-emoji">🦞</span> OpenClaw</a>
+    <div class="logo-sub">The Complete Guide</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <a href="#what-is" class="nav-link"><span class="nav-icon">🦞</span> What is OpenClaw?</a>
+    <a href="#features" class="nav-link"><span class="nav-icon">✨</span> Features</a>
+
+    <div class="nav-section-label">Getting Started</div>
+    <a href="#install" class="nav-link"><span class="nav-icon">📦</span> Installation</a>
+    <a href="#onboarding" class="nav-link"><span class="nav-icon">🚀</span> Onboarding</a>
+    <a href="#quick-start" class="nav-link"><span class="nav-icon">⚡</span> Quick Start</a>
+
+    <div class="nav-section-label">Core Concepts</div>
+    <a href="#gateway" class="nav-link"><span class="nav-icon">🌐</span> Gateway Architecture</a>
+    <a href="#channels" class="nav-link"><span class="nav-icon">💬</span> Channels</a>
+    <a href="#memory" class="nav-link"><span class="nav-icon">🧠</span> Memory & Sessions</a>
+    <a href="#multi-agent" class="nav-link"><span class="nav-icon">🤖</span> Multi-Agent</a>
+
+    <div class="nav-section-label">Tools & Skills</div>
+    <a href="#tools" class="nav-link"><span class="nav-icon">🔧</span> Built-in Tools</a>
+    <a href="#skills" class="nav-link"><span class="nav-icon">📚</span> Skills System</a>
+    <a href="#plugins" class="nav-link"><span class="nav-icon">🔌</span> Plugins</a>
+    <a href="#automation" class="nav-link"><span class="nav-icon">⏰</span> Automation & Cron</a>
+
+    <div class="nav-section-label">Providers & Models</div>
+    <a href="#providers" class="nav-link"><span class="nav-icon">🧩</span> Model Providers</a>
+
+    <div class="nav-section-label">Platforms & Hosting</div>
+    <a href="#platforms" class="nav-link"><span class="nav-icon">🖥️</span> Platforms</a>
+    <a href="#hosting" class="nav-link"><span class="nav-icon">☁️</span> Hosting & Cloud</a>
+
+    <div class="nav-section-label">Reference</div>
+    <a href="#config" class="nav-link"><span class="nav-icon">⚙️</span> Configuration</a>
+    <a href="#security" class="nav-link"><span class="nav-icon">🔒</span> Security</a>
+    <a href="#help" class="nav-link"><span class="nav-icon">🆘</span> Help & Troubleshoot</a>
+    <a href="#community" class="nav-link"><span class="nav-icon">🌐</span> Community</a>
+  </div>
+  <div class="sidebar-footer">
+    <a href="https://docs.openclaw.ai" target="_blank">Docs ↗</a>
+    <a href="https://openclaw.ai" target="_blank">Site ↗</a>
+    <a href="https://github.com/openclaw/openclaw" target="_blank">GitHub ↗</a>
+    <a href="https://discord.com/invite/clawd" target="_blank">Discord ↗</a>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+
+  <!-- HERO -->
+  <div class="hero" id="top">
+    <div class="hero-badge">🦞 The Holy Grail Guide</div>
+    <h1>OpenClaw<br><span>Complete Reference</span></h1>
+    <p class="hero-desc">
+      Everything you need to deploy, configure, and master OpenClaw — the self-hosted AI gateway that lets you chat with an AI agent from any messaging app you already use.
+    </p>
+    <div class="hero-links">
+      <a href="https://openclaw.ai" target="_blank" class="btn btn-primary">🦞 openclaw.ai ↗</a>
+      <a href="https://docs.openclaw.ai" target="_blank" class="btn btn-ghost">📖 Docs ↗</a>
+      <a href="https://github.com/openclaw/openclaw" target="_blank" class="btn btn-ghost">⭐ GitHub ↗</a>
+      <a href="https://discord.com/invite/clawd" target="_blank" class="btn btn-ghost">💬 Discord ↗</a>
+      <a href="https://clawhub.ai" target="_blank" class="btn btn-ghost">🛒 ClawHub ↗</a>
+    </div>
+  </div>
+
+  <!-- WHAT IS OPENCLAW -->
+  <section class="section" id="what-is">
+    <div class="section-header">
+      <div class="section-icon">🦞</div>
+      <div>
+        <div class="section-num">01 — Overview</div>
+        <h2>What is OpenClaw?</h2>
+      </div>
+    </div>
+
+    <p>OpenClaw is a <strong>self-hosted AI gateway</strong> that bridges your favorite chat apps — WhatsApp, Telegram, Discord, iMessage, and more — to AI coding agents and LLMs. You run a single Gateway process on your own machine (or a server), and it becomes the bridge between your messaging apps and an always-available AI assistant.</p>
+
+    <div class="quote-strip">
+      "At this point I don't even know what to call OpenClaw. It is something new. After a few weeks in with it, this is the first time I have felt like I am living in the future since the launch of ChatGPT."
+      <cite>— @davemorin</cite>
+    </div>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">🏠</div>
+        <div class="card-title">Self-Hosted</div>
+        <div class="card-desc">Runs on your hardware, your rules. Your data stays yours — private by default.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">💬</div>
+        <div class="card-title">Multi-Channel</div>
+        <div class="card-desc">One Gateway serves WhatsApp, Telegram, Discord, and more simultaneously.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧠</div>
+        <div class="card-title">Agent-Native</div>
+        <div class="card-desc">Built for coding agents with tool use, sessions, memory, and multi-agent routing.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📖</div>
+        <div class="card-title">Open Source</div>
+        <div class="card-desc">MIT licensed, community-driven. Fork it, hack it, make it yours.</div>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">ℹ️</span>
+      <div class="alert-text">
+        <strong>Who is it for?</strong>
+        Developers and power users who want a personal AI assistant they can message from anywhere — without giving up control of their data or relying on a hosted service.
+      </div>
+    </div>
+
+    <p><strong>Formerly known as</strong> Clawdbot and Moltbot. Built by Peter Steinberger and the community. Independent project, not affiliated with Anthropic.</p>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section" id="features">
+    <div class="section-header">
+      <div class="section-icon">✨</div>
+      <div>
+        <div class="section-num">02 — Features</div>
+        <h2>Full Feature List</h2>
+      </div>
+    </div>
+
+    <h3>Channels</h3>
+    <p>WhatsApp, Telegram, Discord, iMessage built-in. Mattermost, Matrix, Microsoft Teams, Nostr, and more via plugins. Group chat support with mention-based activation. DM safety with allowlists and pairing.</p>
+
+    <h3>Agent Runtime</h3>
+    <p>Embedded agent runtime with tool streaming. Multi-agent routing with isolated sessions per workspace or sender. Sessions: direct chats collapse into shared <code>main</code>; groups are isolated. Streaming and chunking for long responses.</p>
+
+    <h3>Auth & Providers</h3>
+    <p>35+ model providers (Anthropic, OpenAI, Google, and more). Subscription auth via OAuth. Custom and self-hosted provider support (vLLM, SGLang, Ollama, and any OpenAI-compatible or Anthropic-compatible endpoint).</p>
+
+    <h3>Media</h3>
+    <p>Images, audio, video, and documents in and out. Voice note transcription. Text-to-speech with multiple providers.</p>
+
+    <h3>Apps & Interfaces</h3>
+    <p>WebChat and browser Control UI. macOS menu bar companion app. iOS node with pairing, Canvas, camera, screen recording, location, and voice. Android node with pairing, chat, voice, Canvas, camera, and device commands.</p>
+
+    <h3>Tools & Automation</h3>
+    <p>Browser automation, exec, sandboxing. Web search (Brave, Perplexity, Gemini, Grok, Kimi, Firecrawl). Cron jobs and heartbeat scheduling. Skills, plugins, and workflow pipelines (Lobster).</p>
+
+    <table>
+      <thead>
+        <tr><th>Capability</th><th>Details</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Chat channels</td><td>22+ channels supported</td><td><span class="tag tag-green">Built-in</span></td></tr>
+        <tr><td>Model providers</td><td>35+ LLM providers</td><td><span class="tag tag-green">Built-in</span></td></tr>
+        <tr><td>Memory</td><td>Persistent Markdown-based memory</td><td><span class="tag tag-green">Built-in</span></td></tr>
+        <tr><td>Browser control</td><td>Chromium via Playwright</td><td><span class="tag tag-green">Built-in</span></td></tr>
+        <tr><td>File I/O</td><td>Read, write, edit, apply_patch</td><td><span class="tag tag-green">Built-in</span></td></tr>
+        <tr><td>Cron / scheduling</td><td>5-field cron expressions, one-shot, recurring</td><td><span class="tag tag-green">Built-in</span></td></tr>
+        <tr><td>Skills system</td><td>AgentSkills-compatible SKILL.md files</td><td><span class="tag tag-green">Built-in</span></td></tr>
+        <tr><td>Plugins</td><td>npm-published extension packages</td><td><span class="tag tag-blue">Extensible</span></td></tr>
+        <tr><td>Voice calls</td><td>Plivo or Twilio</td><td><span class="tag tag-orange">Plugin</span></td></tr>
+        <tr><td>Windows companion app</td><td>Native app</td><td><span class="tag tag-yellow">Planned</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- INSTALLATION -->
+  <section class="section" id="install">
+    <div class="section-header">
+      <div class="section-icon">📦</div>
+      <div>
+        <div class="section-num">03 — Installation</div>
+        <h2>Installing OpenClaw</h2>
+      </div>
+    </div>
+
+    <p><strong>System Requirements:</strong> Node 24 (recommended) or Node 22.16+. macOS, Linux, or Windows (native or WSL2). WSL2 is more stable than native Windows and recommended for the full experience.</p>
+
+    <div class="alert alert-tip">
+      <span class="alert-icon">✅</span>
+      <div class="alert-text">
+        <strong>Fastest path</strong> — The installer script handles everything: detects your OS, installs Node if needed, installs OpenClaw, and launches onboarding.
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Install via one-liner (macOS / Linux / WSL2)</h4>
+          <pre><code>curl -fsSL https://openclaw.ai/install.sh | bash</code></pre>
+          <p style="font-size:13px; margin-top:4px;">Windows (PowerShell):</p>
+          <pre><code>iwr -useb https://openclaw.ai/install.ps1 | iex</code></pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Run onboarding</h4>
+          <pre><code>openclaw onboard --install-daemon</code></pre>
+          <p style="font-size:13px;">The wizard walks you through choosing a model provider, setting an API key, and configuring the Gateway. Takes about 2 minutes.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Verify the Gateway is running</h4>
+          <pre><code>openclaw gateway status</code></pre>
+          <p style="font-size:13px;">You should see the Gateway listening on port <code>18789</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>Open the dashboard</h4>
+          <pre><code>openclaw dashboard</code></pre>
+          <p style="font-size:13px;">This opens the Control UI in your browser. Type a message and you should get an AI reply!</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Alternative Install Methods</h3>
+    <h4>npm / pnpm</h4>
+    <pre><code>npm install -g openclaw@latest
+openclaw onboard --install-daemon</code></pre>
+    <pre><code># pnpm
+pnpm add -g openclaw@latest
+pnpm approve-builds -g
+openclaw onboard --install-daemon</code></pre>
+
+    <h4>From Source</h4>
+    <pre><code>git clone https://github.com/openclaw/openclaw.git
+cd openclaw
+pnpm install && pnpm ui:build && pnpm build
+pnpm link --global
+openclaw onboard --install-daemon</code></pre>
+
+    <h4>Install from GitHub main</h4>
+    <pre><code>npm install -g github:openclaw/openclaw#main</code></pre>
+
+    <h3>Containers & Package Managers</h3>
+    <div class="card-grid">
+      <div class="card"><a href="https://docs.openclaw.ai/install/docker" target="_blank">
+        <div class="card-icon">🐳</div>
+        <div class="card-title">Docker</div>
+        <div class="card-desc">Containerized or headless deployments</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/install/podman" target="_blank">
+        <div class="card-icon">📦</div>
+        <div class="card-title">Podman</div>
+        <div class="card-desc">Rootless container alternative</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/install/nix" target="_blank">
+        <div class="card-icon">❄️</div>
+        <div class="card-title">Nix</div>
+        <div class="card-desc">Declarative install via Nix flake</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/install/ansible" target="_blank">
+        <div class="card-icon">🎭</div>
+        <div class="card-title">Ansible</div>
+        <div class="card-desc">Automated fleet provisioning</div>
+      </a></div>
+    </div>
+
+    <h3>Verify Your Install</h3>
+    <pre><code>openclaw --version      # confirm the CLI is available
+openclaw doctor         # check for config issues
+openclaw gateway status # verify the Gateway is running</code></pre>
+
+    <div class="alert alert-warn">
+      <span class="alert-icon">⚠️</span>
+      <div class="alert-text">
+        <strong>openclaw not found?</strong>
+        Check that <code>$(npm prefix -g)/bin</code> is in your <code>$PATH</code>. Add <code>export PATH="$(npm prefix -g)/bin:$PATH"</code> to your <code>~/.zshrc</code> or <code>~/.bashrc</code> and open a new terminal.
+      </div>
+    </div>
+  </section>
+
+  <!-- ONBOARDING -->
+  <section class="section" id="onboarding">
+    <div class="section-header">
+      <div class="section-icon">🚀</div>
+      <div>
+        <div class="section-num">04 — Onboarding</div>
+        <h2>Onboarding Overview</h2>
+      </div>
+    </div>
+
+    <p>OpenClaw has two onboarding paths: the <strong>CLI wizard</strong> and the <strong>macOS companion app</strong>. Both accomplish the same setup; choose based on your preference.</p>
+
+    <h3>CLI Onboarding</h3>
+    <p>The <code>openclaw onboard</code> command is the interactive wizard. Run it with <code>--install-daemon</code> to also set up the Gateway as a background service. See the <a href="https://docs.openclaw.ai/start/wizard" target="_blank">full CLI onboarding reference →</a></p>
+
+    <h3>macOS App Onboarding</h3>
+    <p>Download the companion app from <a href="https://github.com/openclaw/openclaw/releases/latest" target="_blank">GitHub Releases</a>. Requires macOS 15+, Universal Binary. The app gives you a menu bar interface and guided setup. See <a href="https://docs.openclaw.ai/start/onboarding" target="_blank">macOS onboarding guide →</a></p>
+
+    <h3>Personal Assistant Setup</h3>
+    <p>After onboarding, follow the <a href="https://docs.openclaw.ai/start/openclaw" target="_blank">Personal Assistant Setup guide</a> to configure your name, persona, preferred channels, and initial memory. This is what makes OpenClaw uniquely <em>yours</em>.</p>
+  </section>
+
+  <!-- QUICK START -->
+  <section class="section" id="quick-start">
+    <div class="section-header">
+      <div class="section-icon">⚡</div>
+      <div>
+        <div class="section-num">05 — Quick Start</div>
+        <h2>5-Minute Setup</h2>
+      </div>
+    </div>
+
+    <p>By the end of these steps, you'll have a running Gateway, configured auth, and a working chat session.</p>
+
+    <pre><code># 1. Install
+curl -fsSL https://openclaw.ai/install.sh | bash
+
+# 2. Run the guided onboarding wizard
+openclaw onboard --install-daemon
+
+# 3. Verify the Gateway
+openclaw gateway status
+
+# 4. Open the browser dashboard
+openclaw dashboard
+
+# 5. Connect a channel (Telegram is fastest — just a bot token)
+# See: https://docs.openclaw.ai/channels/telegram</code></pre>
+
+    <div class="alert alert-tip">
+      <span class="alert-icon">💡</span>
+      <div class="alert-text">
+        <strong>Want to chat from your phone?</strong>
+        The fastest channel to set up is <a href="https://docs.openclaw.ai/channels/telegram" target="_blank">Telegram</a> (just a bot token). After that, try <a href="https://docs.openclaw.ai/channels/whatsapp" target="_blank">WhatsApp</a> for the most popular option.
+      </div>
+    </div>
+
+    <h3>Environment Variables</h3>
+    <p>Advanced path and config overrides:</p>
+    <table>
+      <thead>
+        <tr><th>Variable</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>OPENCLAW_HOME</code></td><td>Home directory for internal path resolution</td></tr>
+        <tr><td><code>OPENCLAW_STATE_DIR</code></td><td>Override the state directory</td></tr>
+        <tr><td><code>OPENCLAW_CONFIG_PATH</code></td><td>Override the config file path</td></tr>
+        <tr><td><code>OPENCLAW_GATEWAY_TOKEN</code></td><td>Auth token for Gateway connections</td></tr>
+        <tr><td><code>OPENCLAW_GATEWAY_PORT</code></td><td>Override the Gateway port (default: 18789)</td></tr>
+      </tbody>
+    </table>
+    <p>Full reference: <a href="https://docs.openclaw.ai/help/environment" target="_blank">Environment Variables →</a></p>
+  </section>
+
+  <hr class="divider">
+
+  <!-- GATEWAY ARCHITECTURE -->
+  <section class="section" id="gateway">
+    <div class="section-header">
+      <div class="section-icon">🌐</div>
+      <div>
+        <div class="section-num">06 — Core Concepts</div>
+        <h2>Gateway Architecture</h2>
+      </div>
+    </div>
+
+    <p>The <strong>Gateway</strong> is the single, always-on process that controls everything — messaging surfaces, routing, control plane, and channel connections.</p>
+
+    <h3>Key Components</h3>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <div class="card-title">Gateway (Daemon)</div>
+        <div class="card-desc">Maintains provider connections. Exposes a typed WebSocket API. Emits events: agent, chat, presence, health, heartbeat, cron.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🖥️</div>
+        <div class="card-title">Clients</div>
+        <div class="card-desc">macOS app, CLI, web admin. One WebSocket connection per client. Send requests, subscribe to events.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <div class="card-title">Nodes</div>
+        <div class="card-desc">macOS / iOS / Android / headless. Connect with role:node. Expose commands like canvas.*, camera.*, location.get.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">💻</div>
+        <div class="card-title">WebChat</div>
+        <div class="card-desc">Static UI using the Gateway WebSocket API. Available at http://127.0.0.1:18789/ by default.</div>
+      </div>
+    </div>
+
+    <h3>Runtime Model</h3>
+    <p>One always-on process for routing, control plane, and channel connections. Single multiplexed port for: WebSocket control/RPC, HTTP APIs (OpenAI-compatible, Responses, tools invoke), Control UI and hooks. Default bind mode: loopback. Auth is required by default.</p>
+
+    <h3>Port & Bind Settings</h3>
+    <table>
+      <thead>
+        <tr><th>Setting</th><th>Resolution Order</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Gateway port</td><td><code>--port</code> → <code>OPENCLAW_GATEWAY_PORT</code> → <code>gateway.port</code> → <code>18789</code></td></tr>
+        <tr><td>Bind mode</td><td>CLI/override → <code>gateway.bind</code> → <code>loopback</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Hot Reload Modes</h3>
+    <table>
+      <thead>
+        <tr><th>Mode</th><th>Behavior</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>off</code></td><td>No config reload</td></tr>
+        <tr><td><code>hot</code></td><td>Apply only hot-safe changes</td></tr>
+        <tr><td><code>restart</code></td><td>Restart on reload-required changes</td></tr>
+        <tr><td><code>hybrid</code> (default)</td><td>Hot-apply when safe, restart when required</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Operator Commands</h3>
+    <pre><code>openclaw gateway status       # check status
+openclaw gateway status --deep # deep diagnostics
+openclaw gateway status --json # JSON output
+openclaw gateway install       # install as service
+openclaw gateway restart       # restart the gateway
+openclaw gateway stop          # stop the gateway
+openclaw secrets reload        # reload secrets
+openclaw logs --follow         # tail logs
+openclaw doctor                # audit and repair</code></pre>
+
+    <h3>Remote Access</h3>
+    <p><strong>Preferred:</strong> <a href="https://docs.openclaw.ai/gateway/tailscale" target="_blank">Tailscale</a> or VPN. <strong>Fallback:</strong> SSH tunnel:</p>
+    <pre><code>ssh -N -L 18789:127.0.0.1:18789 user@host</code></pre>
+
+    <h3>Common Failure Signatures</h3>
+    <table>
+      <thead>
+        <tr><th>Signature</th><th>Likely Issue</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>refusing to bind gateway ... without auth</code></td><td>Non-loopback bind without token/password</td></tr>
+        <tr><td><code>EADDRINUSE</code></td><td>Port conflict — another Gateway instance running</td></tr>
+        <tr><td><code>Gateway start blocked: set gateway.mode=local</code></td><td>Config set to remote mode</td></tr>
+        <tr><td><code>unauthorized</code> during connect</td><td>Auth mismatch between client and gateway</td></tr>
+      </tbody>
+    </table>
+
+    <p>Full docs: <a href="https://docs.openclaw.ai/gateway" target="_blank">Gateway Runbook →</a> | <a href="https://docs.openclaw.ai/concepts/architecture" target="_blank">Gateway Architecture →</a></p>
+  </section>
+
+  <!-- CHANNELS -->
+  <section class="section" id="channels">
+    <div class="section-header">
+      <div class="section-icon">💬</div>
+      <div>
+        <div class="section-num">07 — Channels</div>
+        <h2>Chat Channels</h2>
+      </div>
+    </div>
+
+    <p>OpenClaw can talk to you on any chat app you already use. Each channel connects via the Gateway. Text is supported everywhere; media and reactions vary by channel. Channels can run simultaneously — configure multiple and OpenClaw will route per chat.</p>
+
+    <div class="alert alert-tip">
+      <span class="alert-icon">⚡</span>
+      <div class="alert-text">
+        <strong>Fastest setup:</strong> Telegram (simple bot token). WhatsApp requires QR pairing but is the most popular option.
+      </div>
+    </div>
+
+    <h3>Built-in Channels</h3>
+    <div class="channel-grid">
+      <a href="https://docs.openclaw.ai/channels/whatsapp" target="_blank" class="channel-item"><span class="ch-emoji">💚</span> WhatsApp</a>
+      <a href="https://docs.openclaw.ai/channels/telegram" target="_blank" class="channel-item"><span class="ch-emoji">✈️</span> Telegram</a>
+      <a href="https://docs.openclaw.ai/channels/discord" target="_blank" class="channel-item"><span class="ch-emoji">🎮</span> Discord</a>
+      <a href="https://docs.openclaw.ai/channels/slack" target="_blank" class="channel-item"><span class="ch-emoji">#</span> Slack</a>
+      <a href="https://docs.openclaw.ai/channels/signal" target="_blank" class="channel-item"><span class="ch-emoji">🔒</span> Signal</a>
+      <a href="https://docs.openclaw.ai/channels/bluebubbles" target="_blank" class="channel-item"><span class="ch-emoji">🍎</span> iMessage (BlueBubbles)</a>
+      <a href="https://docs.openclaw.ai/channels/googlechat" target="_blank" class="channel-item"><span class="ch-emoji">🔵</span> Google Chat</a>
+      <a href="https://docs.openclaw.ai/channels/irc" target="_blank" class="channel-item"><span class="ch-emoji">📡</span> IRC</a>
+    </div>
+
+    <h3>Plugin Channels</h3>
+    <div class="channel-grid">
+      <a href="https://docs.openclaw.ai/channels/mattermost" target="_blank" class="channel-item"><span class="ch-emoji">🔷</span> Mattermost</a>
+      <a href="https://docs.openclaw.ai/channels/matrix" target="_blank" class="channel-item"><span class="ch-emoji">📐</span> Matrix</a>
+      <a href="https://docs.openclaw.ai/channels/msteams" target="_blank" class="channel-item"><span class="ch-emoji">💼</span> Microsoft Teams</a>
+      <a href="https://docs.openclaw.ai/channels/nostr" target="_blank" class="channel-item"><span class="ch-emoji">⚡</span> Nostr</a>
+      <a href="https://docs.openclaw.ai/channels/line" target="_blank" class="channel-item"><span class="ch-emoji">💬</span> LINE</a>
+      <a href="https://docs.openclaw.ai/channels/feishu" target="_blank" class="channel-item"><span class="ch-emoji">🪶</span> Feishu</a>
+      <a href="https://docs.openclaw.ai/channels/twitch" target="_blank" class="channel-item"><span class="ch-emoji">🟣</span> Twitch</a>
+      <a href="https://docs.openclaw.ai/plugins/voice-call" target="_blank" class="channel-item"><span class="ch-emoji">📞</span> Voice Call</a>
+      <a href="https://docs.openclaw.ai/channels/nextcloud-talk" target="_blank" class="channel-item"><span class="ch-emoji">☁️</span> Nextcloud Talk</a>
+      <a href="https://docs.openclaw.ai/channels/zalo" target="_blank" class="channel-item"><span class="ch-emoji">🇻🇳</span> Zalo</a>
+      <a href="https://docs.openclaw.ai/channels/synology-chat" target="_blank" class="channel-item"><span class="ch-emoji">💾</span> Synology Chat</a>
+      <a href="https://docs.openclaw.ai/channels/tlon" target="_blank" class="channel-item"><span class="ch-emoji">🌐</span> Tlon (Urbit)</a>
+    </div>
+
+    <h3>Channel Configuration</h3>
+    <p>Example: allow only specific WhatsApp numbers, require @mention in groups:</p>
+    <pre><code>{
+  channels: {
+    whatsapp: {
+      allowFrom: ["+15555550123"],
+      groups: { "*": { requireMention: true } },
+    },
+  },
+  messages: { groupChat: { mentionPatterns: ["@openclaw"] } },
+}</code></pre>
+
+    <p>See also: <a href="https://docs.openclaw.ai/channels/pairing" target="_blank">Pairing →</a> | <a href="https://docs.openclaw.ai/channels/groups" target="_blank">Groups →</a> | <a href="https://docs.openclaw.ai/channels/channel-routing" target="_blank">Channel Routing →</a> | <a href="https://docs.openclaw.ai/channels/troubleshooting" target="_blank">Channel Troubleshooting →</a></p>
+  </section>
+
+  <!-- MEMORY & SESSIONS -->
+  <section class="section" id="memory">
+    <div class="section-header">
+      <div class="section-icon">🧠</div>
+      <div>
+        <div class="section-num">08 — Memory & Sessions</div>
+        <h2>Memory & Sessions</h2>
+      </div>
+    </div>
+
+    <h3>How Memory Works</h3>
+    <p>OpenClaw memory is <strong>plain Markdown in the agent workspace</strong>. The files are the source of truth; the model only "remembers" what gets written to disk.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">📅</div>
+        <div class="card-title">Daily Log</div>
+        <div class="card-desc"><code>memory/YYYY-MM-DD.md</code> — Append-only daily log. Reads today + yesterday at session start.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧠</div>
+        <div class="card-title">Long-term Memory</div>
+        <div class="card-desc"><code>MEMORY.md</code> — Curated long-term memory at the workspace root. Decisions, preferences, durable facts.</div>
+      </div>
+    </div>
+
+    <h3>Memory Tools</h3>
+    <p>Two agent-facing tools are available:</p>
+    <table>
+      <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>memory_search</code></td><td>Semantic recall over indexed snippets</td></tr>
+        <tr><td><code>memory_get</code></td><td>Targeted read of a specific Markdown file or line range</td></tr>
+      </tbody>
+    </table>
+
+    <h3>When to Write Memory</h3>
+    <p>Decisions, preferences, and durable facts → <code>MEMORY.md</code>. Day-to-day notes → <code>memory/YYYY-MM-DD.md</code>. If someone says "remember this," write it down immediately. <strong>If you want something to stick, ask the bot to write it into memory.</strong></p>
+
+    <h3>Vector Memory Search</h3>
+    <p>OpenClaw can build a small vector index over memory files for semantic queries. Supports hybrid search (BM25 + vector). Multiple embedding providers: OpenAI, Gemini, Voyage, Mistral, Ollama, and local GGUF models. See <a href="https://docs.openclaw.ai/reference/memory-config" target="_blank">Memory Config Reference →</a></p>
+
+    <h3>Session Management</h3>
+    <p>Sessions track the conversation history for each agent. Direct chats collapse into a shared <code>main</code> session. Groups get isolated sessions. See: <a href="https://docs.openclaw.ai/concepts/session" target="_blank">Session Management →</a> | <a href="https://docs.openclaw.ai/concepts/compaction" target="_blank">Compaction →</a></p>
+
+    <h3>Automatic Memory Flush</h3>
+    <p>When a session nears auto-compaction, OpenClaw triggers a silent turn to write durable memory before context is compacted. Configurable via <code>agents.defaults.compaction.memoryFlush</code>.</p>
+  </section>
+
+  <!-- MULTI-AGENT -->
+  <section class="section" id="multi-agent">
+    <div class="section-header">
+      <div class="section-icon">🤖</div>
+      <div>
+        <div class="section-num">09 — Multi-Agent</div>
+        <h2>Multi-Agent Routing</h2>
+      </div>
+    </div>
+
+    <p>OpenClaw supports running multiple agents simultaneously — isolated sessions per agent, workspace, or sender. This enables complex workflows where agents can delegate to sub-agents or coordinate across different channels.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">🔀</div>
+        <div class="card-title">Multi-Agent Routing</div>
+        <div class="card-desc">Isolated sessions per workspace or sender. Agents can be pinned to specific jobs.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">👥</div>
+        <div class="card-title">Sub-Agents</div>
+        <div class="card-desc">Spawn sub-agents for parallel tasks. Results delivered back to the requester.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏗️</div>
+        <div class="card-title">Delegate Architecture</div>
+        <div class="card-desc">Delegate patterns for splitting work across agents with different capabilities.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📡</div>
+        <div class="card-title">ACP Agents</div>
+        <div class="card-desc">Agent Communication Protocol for structured inter-agent messaging.</div>
+      </div>
+    </div>
+
+    <p>Full docs: <a href="https://docs.openclaw.ai/concepts/multi-agent" target="_blank">Multi-Agent Routing →</a> | <a href="https://docs.openclaw.ai/tools/subagents" target="_blank">Sub-Agents →</a> | <a href="https://docs.openclaw.ai/concepts/delegate-architecture" target="_blank">Delegate Architecture →</a></p>
+  </section>
+
+  <hr class="divider">
+
+  <!-- TOOLS -->
+  <section class="section" id="tools">
+    <div class="section-header">
+      <div class="section-icon">🔧</div>
+      <div>
+        <div class="section-num">10 — Tools</div>
+        <h2>Built-in Tools</h2>
+      </div>
+    </div>
+
+    <p>Everything the agent does beyond generating text happens through <strong>tools</strong>. These ship with OpenClaw and are available without installing any plugins:</p>
+
+    <table>
+      <thead>
+        <tr><th>Tool</th><th>What it does</th><th>Docs</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>exec</code> / <code>process</code></td><td>Run shell commands, manage background processes</td><td><a href="https://docs.openclaw.ai/tools/exec" target="_blank">Exec →</a></td></tr>
+        <tr><td><code>browser</code></td><td>Control a Chromium browser (navigate, click, screenshot)</td><td><a href="https://docs.openclaw.ai/tools/browser" target="_blank">Browser →</a></td></tr>
+        <tr><td><code>web_search</code> / <code>web_fetch</code></td><td>Search the web, fetch page content</td><td><a href="https://docs.openclaw.ai/tools/web" target="_blank">Web →</a></td></tr>
+        <tr><td><code>read</code> / <code>write</code> / <code>edit</code></td><td>File I/O in the workspace</td><td>—</td></tr>
+        <tr><td><code>apply_patch</code></td><td>Multi-hunk file patches</td><td><a href="https://docs.openclaw.ai/tools/apply-patch" target="_blank">Apply Patch →</a></td></tr>
+        <tr><td><code>message</code></td><td>Send messages across all channels</td><td><a href="https://docs.openclaw.ai/tools/agent-send" target="_blank">Agent Send →</a></td></tr>
+        <tr><td><code>canvas</code></td><td>Drive node Canvas (present, eval, snapshot)</td><td>—</td></tr>
+        <tr><td><code>image</code> / <code>image_generate</code></td><td>Analyze or generate images</td><td>—</td></tr>
+        <tr><td><code>cron</code> / <code>gateway</code></td><td>Manage scheduled jobs, restart gateway</td><td><a href="https://docs.openclaw.ai/automation/cron-jobs" target="_blank">Cron →</a></td></tr>
+        <tr><td><code>sessions_*</code> / <code>agents_list</code></td><td>Session management, sub-agents</td><td><a href="https://docs.openclaw.ai/tools/subagents" target="_blank">Sub-agents →</a></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Tool Configuration</h3>
+    <h4>Allow & Deny Lists</h4>
+    <pre><code>{
+  tools: {
+    allow: ["group:fs", "browser", "web_search"],
+    deny: ["exec"],
+  },
+}</code></pre>
+
+    <h4>Tool Profiles</h4>
+    <table>
+      <thead><tr><th>Profile</th><th>What it includes</th></tr></thead>
+      <tbody>
+        <tr><td><code>full</code></td><td>All tools (default)</td></tr>
+        <tr><td><code>coding</code></td><td>File I/O, runtime, sessions, memory, image</td></tr>
+        <tr><td><code>messaging</code></td><td>Messaging, session list/history/send/status</td></tr>
+        <tr><td><code>minimal</code></td><td><code>session_status</code> only</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Tool Groups</h4>
+    <table>
+      <thead><tr><th>Group</th><th>Tools</th></tr></thead>
+      <tbody>
+        <tr><td><code>group:runtime</code></td><td>exec, bash, process</td></tr>
+        <tr><td><code>group:fs</code></td><td>read, write, edit, apply_patch</td></tr>
+        <tr><td><code>group:sessions</code></td><td>sessions_list, sessions_history, sessions_send, sessions_spawn, sessions_yield, subagents, session_status</td></tr>
+        <tr><td><code>group:web</code></td><td>web_search, web_fetch</td></tr>
+        <tr><td><code>group:ui</code></td><td>browser, canvas</td></tr>
+        <tr><td><code>group:automation</code></td><td>cron, gateway</td></tr>
+        <tr><td><code>group:messaging</code></td><td>message</td></tr>
+      </tbody>
+    </table>
+
+    <p>Full docs: <a href="https://docs.openclaw.ai/tools" target="_blank">Tools and Plugins →</a></p>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="section" id="skills">
+    <div class="section-header">
+      <div class="section-icon">📚</div>
+      <div>
+        <div class="section-num">11 — Skills</div>
+        <h2>Skills System</h2>
+      </div>
+    </div>
+
+    <p>Skills teach the agent <em>when and how</em> to use tools. A skill is a Markdown file (<code>SKILL.md</code>) injected into the system prompt with YAML frontmatter and instructions.</p>
+
+    <h3>Three Layers</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Tools — What the agent calls</h4>
+          <p style="font-size:13px;">A tool is a typed function the agent can invoke (e.g. <code>exec</code>, <code>browser</code>, <code>web_search</code>, <code>message</code>).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Skills — Teach the agent when and how</h4>
+          <p style="font-size:13px;">A skill is a Markdown file injected into the system prompt. Skills give context, constraints, and step-by-step guidance for using tools effectively.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Plugins — Package everything together</h4>
+          <p style="font-size:13px;">A plugin registers any combination: channels, model providers, tools, skills, speech, image generation, and more.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Skill Locations & Precedence</h3>
+    <p>Skills are loaded from three places (highest wins):</p>
+    <ol style="margin: 12px 0 12px 24px; color: #b8b0a6; font-size: 14px; line-height: 1.8;">
+      <li><code>&lt;workspace&gt;/skills</code> — highest precedence (per-agent)</li>
+      <li><code>~/.openclaw/skills</code> — managed/local skills (shared across agents)</li>
+      <li>Bundled skills — shipped with the install (lowest precedence)</li>
+    </ol>
+
+    <h3>SKILL.md Format</h3>
+    <pre><code>---
+name: image-lab
+description: Generate or edit images via a provider-backed image workflow
+metadata:
+  {
+    "openclaw": {
+      "emoji": "🖼️",
+      "requires": { "bins": ["uv"], "env": ["GEMINI_API_KEY"] },
+      "primaryEnv": "GEMINI_API_KEY",
+    },
+  }
+---
+Your skill instructions here...
+</code></pre>
+
+    <h3>ClawHub — Skills Registry</h3>
+    <p>Browse and install community skills from <a href="https://clawhub.ai" target="_blank">clawhub.ai</a>.</p>
+    <pre><code># Install a skill
+openclaw skills install &lt;skill-slug&gt;
+
+# Update all installed skills
+openclaw skills update --all</code></pre>
+
+    <p>Full docs: <a href="https://docs.openclaw.ai/tools/skills" target="_blank">Skills →</a> | <a href="https://docs.openclaw.ai/tools/creating-skills" target="_blank">Creating Skills →</a> | <a href="https://docs.openclaw.ai/tools/clawhub" target="_blank">ClawHub →</a></p>
+  </section>
+
+  <!-- PLUGINS -->
+  <section class="section" id="plugins">
+    <div class="section-header">
+      <div class="section-icon">🔌</div>
+      <div>
+        <div class="section-num">12 — Plugins</div>
+        <h2>Plugins</h2>
+      </div>
+    </div>
+
+    <p>Plugins are npm packages that can register new channels, model providers, tools, skills, speech engines, image generation, and more. Core plugins ship with OpenClaw; external plugins are published by the community on npm.</p>
+
+    <h3>Installing & Configuring Plugins</h3>
+    <p>See the full guide: <a href="https://docs.openclaw.ai/tools/plugin" target="_blank">Install and Configure Plugins →</a></p>
+
+    <h3>Plugin Bundles</h3>
+    <p>Bundles are curated sets of plugins for common setups. See <a href="https://docs.openclaw.ai/plugins/bundles" target="_blank">Plugin Bundles →</a></p>
+
+    <h3>Community Plugins</h3>
+    <p>Browse community-built plugins at <a href="https://docs.openclaw.ai/plugins/community" target="_blank">Community Plugins →</a></p>
+
+    <h3>Notable Plugin-Provided Tools</h3>
+    <table>
+      <thead><tr><th>Plugin</th><th>What it provides</th><th>Docs</th></tr></thead>
+      <tbody>
+        <tr><td>Lobster</td><td>Typed workflow runtime with resumable approvals</td><td><a href="https://docs.openclaw.ai/tools/lobster" target="_blank">Lobster →</a></td></tr>
+        <tr><td>LLM Task</td><td>JSON-only LLM step for structured output</td><td><a href="https://docs.openclaw.ai/tools/llm-task" target="_blank">LLM Task →</a></td></tr>
+        <tr><td>Diffs</td><td>Diff viewer and renderer</td><td><a href="https://docs.openclaw.ai/tools/diffs" target="_blank">Diffs →</a></td></tr>
+        <tr><td>OpenProse</td><td>Markdown-first workflow orchestration</td><td><a href="https://docs.openclaw.ai/prose" target="_blank">OpenProse →</a></td></tr>
+        <tr><td>Voice Call</td><td>Telephony via Plivo or Twilio</td><td><a href="https://docs.openclaw.ai/plugins/voice-call" target="_blank">Voice Call →</a></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- AUTOMATION & CRON -->
+  <section class="section" id="automation">
+    <div class="section-header">
+      <div class="section-icon">⏰</div>
+      <div>
+        <div class="section-num">13 — Automation</div>
+        <h2>Automation & Cron Jobs</h2>
+      </div>
+    </div>
+
+    <p>Cron is the Gateway's built-in scheduler. It persists jobs, wakes the agent at the right time, and can optionally deliver output back to a chat. Jobs persist at <code>~/.openclaw/cron/jobs.json</code>.</p>
+
+    <h3>Quick Start</h3>
+    <pre><code># One-shot reminder
+openclaw cron add \
+  --name "Reminder" \
+  --at "2026-02-01T16:00:00Z" \
+  --session main \
+  --system-event "Reminder: check the cron docs draft" \
+  --wake now \
+  --delete-after-run
+
+# Recurring isolated job with Slack delivery
+openclaw cron add \
+  --name "Morning brief" \
+  --cron "0 7 * * *" \
+  --tz "America/Los_Angeles" \
+  --session isolated \
+  --message "Summarize overnight updates." \
+  --announce \
+  --channel slack \
+  --to "channel:C1234567890"</code></pre>
+
+    <h3>Schedule Kinds</h3>
+    <table>
+      <thead><tr><th>Kind</th><th>Use for</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>at</code></td><td>One-shot timestamp</td><td><code>--at "2026-01-12T18:00:00Z"</code></td></tr>
+        <tr><td><code>every</code></td><td>Fixed interval (ms)</td><td><code>--every 300000</code></td></tr>
+        <tr><td><code>cron</code></td><td>5/6-field cron expression</td><td><code>--cron "0 7 * * *"</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Session Targets</h3>
+    <table>
+      <thead><tr><th>Target</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td><code>main</code></td><td>Run during next heartbeat with main context</td></tr>
+        <tr><td><code>isolated</code></td><td>Dedicated agent turn in <code>cron:&lt;jobId&gt;</code></td></tr>
+        <tr><td><code>current</code></td><td>Bind to the session where cron was created</td></tr>
+        <tr><td><code>session:custom-id</code></td><td>Persistent named session (context preserved across runs)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Delivery Modes</h3>
+    <table>
+      <thead><tr><th>Mode</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td><code>announce</code></td><td>Deliver output to target channel, brief summary to main session</td></tr>
+        <tr><td><code>webhook</code></td><td>POST finished event payload to a URL</td></tr>
+        <tr><td><code>none</code></td><td>Internal only, no delivery</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Retry Policy</h3>
+    <p><strong>Transient errors (retried):</strong> Rate limit, provider overload, network errors, 5xx server errors.</p>
+    <p><strong>Permanent errors (disable immediately):</strong> Auth failures, config/validation errors.</p>
+
+    <h3>Other Automation</h3>
+    <div class="card-grid">
+      <div class="card"><a href="https://docs.openclaw.ai/automation/hooks" target="_blank">
+        <div class="card-icon">🪝</div>
+        <div class="card-title">Hooks</div>
+        <div class="card-desc">Event-driven hooks for custom automation triggers</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/automation/standing-orders" target="_blank">
+        <div class="card-icon">📋</div>
+        <div class="card-title">Standing Orders</div>
+        <div class="card-desc">Persistent instructions that apply to every agent turn</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/automation/webhook" target="_blank">
+        <div class="card-icon">🌐</div>
+        <div class="card-title">Webhooks</div>
+        <div class="card-desc">Receive external events and trigger agent actions</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/automation/gmail-pubsub" target="_blank">
+        <div class="card-icon">📧</div>
+        <div class="card-title">Gmail PubSub</div>
+        <div class="card-desc">Real-time Gmail integration via Google PubSub</div>
+      </a></div>
+    </div>
+
+    <p>Full cron docs: <a href="https://docs.openclaw.ai/automation/cron-jobs" target="_blank">Cron Jobs →</a> | <a href="https://docs.openclaw.ai/automation/cron-vs-heartbeat" target="_blank">Cron vs Heartbeat →</a></p>
+  </section>
+
+  <hr class="divider">
+
+  <!-- PROVIDERS -->
+  <section class="section" id="providers">
+    <div class="section-header">
+      <div class="section-icon">🧩</div>
+      <div>
+        <div class="section-num">14 — Model Providers</div>
+        <h2>Model Providers</h2>
+      </div>
+    </div>
+
+    <p>OpenClaw supports 35+ LLM providers. Pick a provider, authenticate, then set the default model as <code>provider/model</code>.</p>
+
+    <pre><code>{
+  agents: {
+    defaults: {
+      model: { primary: "anthropic/claude-opus-4-6" }
+    }
+  },
+}</code></pre>
+
+    <h3>Supported Providers</h3>
+    <div class="provider-grid">
+      <a href="https://docs.openclaw.ai/providers/anthropic" target="_blank" class="provider-pill">Anthropic</a>
+      <a href="https://docs.openclaw.ai/providers/openai" target="_blank" class="provider-pill">OpenAI</a>
+      <a href="https://docs.openclaw.ai/providers/google" target="_blank" class="provider-pill">Google (Gemini)</a>
+      <a href="https://docs.openclaw.ai/providers/bedrock" target="_blank" class="provider-pill">Amazon Bedrock</a>
+      <a href="https://docs.openclaw.ai/providers/ollama" target="_blank" class="provider-pill">Ollama (local)</a>
+      <a href="https://docs.openclaw.ai/providers/openrouter" target="_blank" class="provider-pill">OpenRouter</a>
+      <a href="https://docs.openclaw.ai/providers/groq" target="_blank" class="provider-pill">Groq</a>
+      <a href="https://docs.openclaw.ai/providers/mistral" target="_blank" class="provider-pill">Mistral</a>
+      <a href="https://docs.openclaw.ai/providers/deepseek" target="_blank" class="provider-pill">DeepSeek</a>
+      <a href="https://docs.openclaw.ai/providers/xai" target="_blank" class="provider-pill">xAI (Grok)</a>
+      <a href="https://docs.openclaw.ai/providers/minimax" target="_blank" class="provider-pill">MiniMax</a>
+      <a href="https://docs.openclaw.ai/providers/perplexity-provider" target="_blank" class="provider-pill">Perplexity</a>
+      <a href="https://docs.openclaw.ai/providers/together" target="_blank" class="provider-pill">Together AI</a>
+      <a href="https://docs.openclaw.ai/providers/litellm" target="_blank" class="provider-pill">LiteLLM</a>
+      <a href="https://docs.openclaw.ai/providers/github-copilot" target="_blank" class="provider-pill">GitHub Copilot</a>
+      <a href="https://docs.openclaw.ai/providers/venice" target="_blank" class="provider-pill">Venice AI</a>
+      <a href="https://docs.openclaw.ai/providers/nvidia" target="_blank" class="provider-pill">NVIDIA</a>
+      <a href="https://docs.openclaw.ai/providers/qwen" target="_blank" class="provider-pill">Qwen</a>
+      <a href="https://docs.openclaw.ai/providers/moonshot" target="_blank" class="provider-pill">Moonshot AI (Kimi)</a>
+      <a href="https://docs.openclaw.ai/providers/vllm" target="_blank" class="provider-pill">vLLM (local)</a>
+      <a href="https://docs.openclaw.ai/providers/sglang" target="_blank" class="provider-pill">SGLang (local)</a>
+      <a href="https://docs.openclaw.ai/providers/huggingface" target="_blank" class="provider-pill">Hugging Face</a>
+      <a href="https://docs.openclaw.ai/providers/cloudflare-ai-gateway" target="_blank" class="provider-pill">Cloudflare AI Gateway</a>
+      <a href="https://docs.openclaw.ai/providers/vercel-ai-gateway" target="_blank" class="provider-pill">Vercel AI Gateway</a>
+      <a href="https://docs.openclaw.ai/providers/claude-max-api-proxy" target="_blank" class="provider-pill">Claude Max Proxy ⚠️</a>
+    </div>
+
+    <h3>Model Failover</h3>
+    <p>Configure automatic failover between providers when a model is unavailable. See <a href="https://docs.openclaw.ai/concepts/model-failover" target="_blank">Model Failover →</a></p>
+
+    <h3>Transcription Providers</h3>
+    <p><a href="https://docs.openclaw.ai/providers/deepgram" target="_blank">Deepgram</a> — Audio transcription for voice notes.</p>
+
+    <p>Full directory: <a href="https://docs.openclaw.ai/providers" target="_blank">Provider Directory →</a></p>
+  </section>
+
+  <!-- PLATFORMS -->
+  <section class="section" id="platforms">
+    <div class="section-header">
+      <div class="section-icon">🖥️</div>
+      <div>
+        <div class="section-num">15 — Platforms</div>
+        <h2>Platforms</h2>
+      </div>
+    </div>
+
+    <p>OpenClaw core is written in TypeScript. <strong>Node is the recommended runtime.</strong> Bun is not recommended for the Gateway (WhatsApp/Telegram bugs).</p>
+
+    <div class="card-grid">
+      <div class="card"><a href="https://docs.openclaw.ai/platforms/macos" target="_blank">
+        <div class="card-icon">🍎</div>
+        <div class="card-title">macOS</div>
+        <div class="card-desc">Full support with companion menu bar app, Canvas, voice wake, camera. macOS 15+.</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/platforms/linux" target="_blank">
+        <div class="card-icon">🐧</div>
+        <div class="card-title">Linux</div>
+        <div class="card-desc">Full Gateway support. Companion app planned. Run as systemd service.</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/platforms/windows" target="_blank">
+        <div class="card-icon">🪟</div>
+        <div class="card-title">Windows</div>
+        <div class="card-desc">Native Windows and WSL2 supported. WSL2 is more stable and recommended.</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/platforms/ios" target="_blank">
+        <div class="card-icon">📱</div>
+        <div class="card-title">iOS</div>
+        <div class="card-desc">Node app with pairing, Canvas, camera, screen recording, location, voice.</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/platforms/android" target="_blank">
+        <div class="card-icon">🤖</div>
+        <div class="card-title">Android</div>
+        <div class="card-desc">Node app with pairing, chat, voice, Canvas, camera, device commands.</div>
+      </a></div>
+    </div>
+
+    <h3>macOS Companion App</h3>
+    <p>Download from <a href="https://github.com/openclaw/openclaw/releases/latest" target="_blank">GitHub Releases</a>. Requires macOS 15+, Universal Binary. Features menu bar access, gateway lifecycle management, Canvas, voice wake, and more.</p>
+    <p>macOS-specific docs: <a href="https://docs.openclaw.ai/platforms/mac/menu-bar" target="_blank">Menu Bar →</a> | <a href="https://docs.openclaw.ai/platforms/mac/canvas" target="_blank">Canvas →</a> | <a href="https://docs.openclaw.ai/platforms/mac/voicewake" target="_blank">Voice Wake →</a> | <a href="https://docs.openclaw.ai/platforms/mac/permissions" target="_blank">Permissions →</a></p>
+  </section>
+
+  <!-- HOSTING -->
+  <section class="section" id="hosting">
+    <div class="section-header">
+      <div class="section-icon">☁️</div>
+      <div>
+        <div class="section-num">16 — Hosting</div>
+        <h2>Hosting & Cloud Deployment</h2>
+      </div>
+    </div>
+
+    <p>Deploy OpenClaw on a cloud server or VPS for 24/7 availability. Use the <a href="https://docs.openclaw.ai/vps" target="_blank">VPS hub</a> for general Linux VPS guidance.</p>
+
+    <div class="card-grid">
+      <div class="card"><a href="https://docs.openclaw.ai/install/fly" target="_blank">
+        <div class="card-icon">🚀</div><div class="card-title">Fly.io</div>
+        <div class="card-desc">Simple container-based deployment with free tier</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/install/hetzner" target="_blank">
+        <div class="card-icon">🖥️</div><div class="card-title">Hetzner</div>
+        <div class="card-desc">Affordable German cloud VPS with Docker</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/install/gcp" target="_blank">
+        <div class="card-icon">☁️</div><div class="card-title">Google Cloud</div>
+        <div class="card-desc">Compute Engine VMs</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/install/azure" target="_blank">
+        <div class="card-icon">🔵</div><div class="card-title">Azure</div>
+        <div class="card-desc">Azure Linux VM deployment</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/install/railway" target="_blank">
+        <div class="card-icon">🚂</div><div class="card-title">Railway</div>
+        <div class="card-desc">Simple deployment with Railway platform</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/install/render" target="_blank">
+        <div class="card-icon">🌟</div><div class="card-title">Render</div>
+        <div class="card-desc">Managed cloud hosting</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/install/digitalocean" target="_blank">
+        <div class="card-icon">🌊</div><div class="card-title">DigitalOcean</div>
+        <div class="card-desc">Droplets and App Platform</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/install/oracle" target="_blank">
+        <div class="card-icon">🔴</div><div class="card-title">Oracle Cloud</div>
+        <div class="card-desc">Oracle Cloud Infrastructure (always free tier available)</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/install/raspberry-pi" target="_blank">
+        <div class="card-icon">🫐</div><div class="card-title">Raspberry Pi</div>
+        <div class="card-desc">Run your lobster on a Pi at home</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/install/kubernetes" target="_blank">
+        <div class="card-icon">☸️</div><div class="card-title">Kubernetes</div>
+        <div class="card-desc">K8s deployment for production scale</div>
+      </a></div>
+    </div>
+
+    <h3>Remote Access</h3>
+    <p><a href="https://docs.openclaw.ai/gateway/tailscale" target="_blank">Tailscale</a> is the recommended approach for remote access — connects your devices in a private tailnet. SSH tunneling also works: <code>ssh -N -L 18789:127.0.0.1:18789 user@host</code></p>
+  </section>
+
+  <hr class="divider">
+
+  <!-- CONFIGURATION -->
+  <section class="section" id="config">
+    <div class="section-header">
+      <div class="section-icon">⚙️</div>
+      <div>
+        <div class="section-num">17 — Configuration</div>
+        <h2>Configuration Reference</h2>
+      </div>
+    </div>
+
+    <p>Config lives at <code>~/.openclaw/openclaw.json</code>. If you do nothing, OpenClaw uses sensible defaults. Example config:</p>
+
+    <pre><code>{
+  // Channel config
+  channels: {
+    whatsapp: {
+      allowFrom: ["+15555550123"],
+      groups: { "*": { requireMention: true } },
+    },
+  },
+
+  // Default model
+  agents: {
+    defaults: {
+      model: { primary: "anthropic/claude-opus-4-6" },
+      workspace: "~/.openclaw/workspace",
+    },
+  },
+
+  // Tool restrictions
+  tools: {
+    profile: "coding",
+    allow: ["group:fs", "browser", "web_search"],
+    deny: ["exec"],
+  },
+
+  // Cron settings
+  cron: {
+    enabled: true,
+    sessionRetention: "24h",
+  },
+
+  // Gateway settings
+  gateway: {
+    port: 18789,
+    bind: "loopback",
+    reload: { mode: "hybrid" },
+    auth: { token: "your-secret-token" },
+  },
+
+  // Skills
+  skills: {
+    entries: {
+      "my-skill": { enabled: true },
+    },
+  },
+}</code></pre>
+
+    <p>Full configuration reference: <a href="https://docs.openclaw.ai/gateway/configuration" target="_blank">Gateway Configuration →</a></p>
+  </section>
+
+  <!-- SECURITY -->
+  <section class="section" id="security">
+    <div class="section-header">
+      <div class="section-icon">🔒</div>
+      <div>
+        <div class="section-num">18 — Security</div>
+        <h2>Security & Sandboxing</h2>
+      </div>
+    </div>
+
+    <div class="alert alert-warn">
+      <span class="alert-icon">⚠️</span>
+      <div class="alert-text">
+        <strong>Treat third-party skills as untrusted code.</strong>
+        Read them before enabling. Prefer sandboxed runs for untrusted inputs and risky tools.
+      </div>
+    </div>
+
+    <h3>Pairing & Trust</h3>
+    <p>All WebSocket clients include a <strong>device identity</strong> on connect. New device IDs require pairing approval. The Gateway issues a device token for subsequent connects. Local connects (loopback) can be auto-approved.</p>
+
+    <h3>Allowlists</h3>
+    <p>Control who can message your agent with <code>channels.*.allowFrom</code> per channel. Use <code>groups.*.requireMention</code> to require @mention in group chats.</p>
+
+    <h3>Sandboxing</h3>
+    <p>Run the agent in a sandboxed Docker container for untrusted inputs. Configure via <code>agents.defaults.sandbox.docker</code>. See <a href="https://docs.openclaw.ai/gateway/sandboxing" target="_blank">Sandboxing →</a></p>
+
+    <h3>Formal Verification & Threat Model</h3>
+    <p>OpenClaw publishes a formal threat model using MITRE ATLAS. See: <a href="https://docs.openclaw.ai/security/formal-verification" target="_blank">Formal Verification →</a> | <a href="https://docs.openclaw.ai/security/THREAT-MODEL-ATLAS" target="_blank">Threat Model →</a></p>
+
+    <p>Full security docs: <a href="https://docs.openclaw.ai/gateway/security" target="_blank">Security →</a></p>
+  </section>
+
+  <!-- HELP & TROUBLESHOOTING -->
+  <section class="section" id="help">
+    <div class="section-header">
+      <div class="section-icon">🆘</div>
+      <div>
+        <div class="section-num">19 — Help</div>
+        <h2>Help & Troubleshooting</h2>
+      </div>
+    </div>
+
+    <div class="card-grid">
+      <div class="card"><a href="https://docs.openclaw.ai/help/troubleshooting" target="_blank">
+        <div class="card-icon">🔍</div>
+        <div class="card-title">Troubleshooting</div>
+        <div class="card-desc">Symptom-first diagnostics — start here when something is broken</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/help/faq" target="_blank">
+        <div class="card-icon">❓</div>
+        <div class="card-title">FAQ</div>
+        <div class="card-desc">Conceptual questions answered</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/gateway/troubleshooting" target="_blank">
+        <div class="card-icon">🌐</div>
+        <div class="card-title">Gateway Issues</div>
+        <div class="card-desc">Gateway-specific diagnostics and error messages</div>
+      </a></div>
+      <div class="card"><a href="https://docs.openclaw.ai/gateway/doctor" target="_blank">
+        <div class="card-icon">🩺</div>
+        <div class="card-title">Doctor</div>
+        <div class="card-desc">Audit and repair your OpenClaw installation</div>
+      </a></div>
+    </div>
+
+    <h3>Quick Fixes</h3>
+    <pre><code># Run the full health check
+openclaw doctor
+
+# Check Node version
+node --version  # Should be 22.14+ or 24
+
+# Check global npm path
+npm prefix -g
+echo "$PATH"
+
+# Restart the gateway
+openclaw gateway restart
+
+# View logs
+openclaw logs --follow</code></pre>
+
+    <h3>More Debug Resources</h3>
+    <p>
+      <a href="https://docs.openclaw.ai/help/environment" target="_blank">Environment Variables →</a> |
+      <a href="https://docs.openclaw.ai/help/debugging" target="_blank">Debugging →</a> |
+      <a href="https://docs.openclaw.ai/help/testing" target="_blank">Testing →</a> |
+      <a href="https://docs.openclaw.ai/diagnostics/flags" target="_blank">Diagnostics Flags →</a> |
+      <a href="https://docs.openclaw.ai/install/updating" target="_blank">Updating →</a> |
+      <a href="https://docs.openclaw.ai/install/migrating" target="_blank">Migration Guide →</a> |
+      <a href="https://docs.openclaw.ai/install/uninstall" target="_blank">Uninstall →</a>
+    </p>
+  </section>
+
+  <!-- COMMUNITY -->
+  <section class="section" id="community">
+    <div class="section-header">
+      <div class="section-icon">🌐</div>
+      <div>
+        <div class="section-num">20 — Community</div>
+        <h2>Community & Resources</h2>
+      </div>
+    </div>
+
+    <div class="card-grid">
+      <div class="card"><a href="https://discord.com/invite/clawd" target="_blank">
+        <div class="card-icon">💬</div>
+        <div class="card-title">Discord</div>
+        <div class="card-desc">Join the community. Get help, share builds, discuss features.</div>
+      </a></div>
+      <div class="card"><a href="https://github.com/openclaw/openclaw" target="_blank">
+        <div class="card-icon">⭐</div>
+        <div class="card-title">GitHub</div>
+        <div class="card-desc">Source code, issues, releases, and contributions.</div>
+      </a></div>
+      <div class="card"><a href="https://clawhub.ai" target="_blank">
+        <div class="card-icon">🛒</div>
+        <div class="card-title">ClawHub</div>
+        <div class="card-desc">Community skills registry. Browse and install skills.</div>
+      </a></div>
+      <div class="card"><a href="https://openclaw.ai/showcase" target="_blank">
+        <div class="card-icon">🎪</div>
+        <div class="card-title">Showcase</div>
+        <div class="card-desc">See what people have built with OpenClaw.</div>
+      </a></div>
+      <div class="card"><a href="https://openclaw.ai/blog" target="_blank">
+        <div class="card-icon">📝</div>
+        <div class="card-title">Blog</div>
+        <div class="card-desc">Updates, announcements, and articles.</div>
+      </a></div>
+      <div class="card"><a href="https://openclaw.ai/integrations" target="_blank">
+        <div class="card-icon">🔗</div>
+        <div class="card-title">50+ Integrations</div>
+        <div class="card-desc">Browse all supported integrations and tools.</div>
+      </a></div>
+    </div>
+
+    <div class="quote-strip">
+      "TLDR; open source built a better version of Siri that Apple ($3.6 trillion company) was sleeping on for years. Welcome to the AI era where a dude and a repo fills in the cracks of billion dollar industries."
+      <cite>— @Hesamation</cite>
+    </div>
+
+    <h3>Key People</h3>
+    <p>OpenClaw is built by <a href="https://steipete.me" target="_blank">Peter Steinberger</a> (@steipete) and the community. The AI agent persona is "Molty" 🦞 — a space lobster with a <a href="https://soul.md" target="_blank">soul</a>.</p>
+
+    <h3>Sponsors</h3>
+    <p>OpenClaw is sponsored by <a href="https://openai.com" target="_blank">OpenAI</a>, <a href="https://vercel.com" target="_blank">Vercel</a>, <a href="https://blacksmith.sh" target="_blank">Blacksmith</a>, and <a href="https://www.convex.dev" target="_blank">Convex</a>.</p>
+
+    <h3>Press</h3>
+    <p>Featured in <a href="https://www.macstories.net/stories/clawdbot-showed-me-what-the-future-of-personal-ai-assistants-looks-like/" target="_blank">MacStories</a>: "OpenClaw Showed Me What the Future of Personal AI Assistants Looks Like" by Federico Viticci.</p>
+
+    <h3>Docs Meta</h3>
+    <p>
+      <a href="https://docs.openclaw.ai/start/hubs" target="_blank">Docs Hubs →</a> |
+      <a href="https://docs.openclaw.ai/start/docs-directory" target="_blank">Docs Directory →</a> |
+      <a href="https://docs.openclaw.ai/start/lore" target="_blank">OpenClaw Lore →</a> |
+      <a href="https://docs.openclaw.ai/start/showcase" target="_blank">Showcase →</a>
+    </p>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">ℹ️</span>
+      <div class="alert-text">
+        <strong>Independent project.</strong>
+        OpenClaw is not affiliated with Anthropic. MIT licensed and community-driven. Trust page: <a href="https://trust.openclaw.ai/" target="_blank">trust.openclaw.ai →</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- SCROLL TO TOP -->
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<script>
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('.section, .hero');
+  const navLinks = document.querySelectorAll('.nav-link');
+  const scrollBtn = document.getElementById('scroll-top');
+
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+
+    // Show/hide scroll button
+    if (scrollY > 400) scrollBtn.classList.add('visible');
+    else scrollBtn.classList.remove('visible');
+
+    // Highlight active nav item
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop - 60;
+      if (scrollY >= sectionTop) current = section.id;
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      const href = link.getAttribute('href');
+      if (href && href === '#' + current) link.classList.add('active');
+    });
+  });
+
+  // Smooth scroll for nav links
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        e.preventDefault();
+        const target = document.querySelector(href);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
