@@ -6,7 +6,7 @@
 
 ## 🌐 View the Guide
 
-**👉 [Read it live (GitHub Pages)](https://yourusername.github.io/openclaw-guide/)**
+**👉 [Read it live (GitHub Pages)](https://credabit.github.io/Openclaw-multiple-agent-guide/)**
 **📄 [Download the PDF](./openclaw-guide.pdf)**
 
 ---
@@ -97,7 +97,7 @@ It's a single self-contained HTML file — no build step, no dependencies.
 **GitHub Pages**
 1. Fork this repo
 2. Go to **Settings → Pages → Source → `main` branch**
-3. Live at `https://yourusername.github.io/openclaw-guide/` in ~60 seconds
+3. Live at `https://credabit.github.io/Openclaw-multiple-agent-guide/` in ~60 seconds
 
 **Anywhere else** (Vercel, Netlify, Cloudflare Pages)
 - Drop `index.html` in and deploy — that's it
